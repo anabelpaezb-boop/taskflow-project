@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>London Trip Planner</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">LDN</div>
+        <div>
+          <h1>London Trip Planner</h1>
+          <p class="muted">Maqueta HTML + CSS</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>Mi viaje</h2>
+
+        <section class="sidebar-box">
+          <p class="muted">Fechas</p>
+          <p><strong>10–16 Abril</strong> · 6 días</p>
+        </section>
+
+        <section class="sidebar-box">
+          <p class="muted">Leyenda de prioridades</p>
+
+          <ul class="legend" aria-label="Leyenda de prioridades">
+            <li class="legend-item">
+              <span class="badge badge--must">IMPRESCINDIBLE</span>
+              <span class="legend-text">Sí o sí hay que ir</span>
+            </li>
+
+            <li class="legend-item">
+              <span class="badge badge--nice">RECOMENDADO</span>
+              <span class="legend-text">Muy buena idea si da tiempo</span>
+            </li>
+
+            <li class="legend-item">
+              <span class="badge badge--optional">OPCIONAL</span>
+              <span class="legend-text">Si sobra tiempo / plan relajado</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="sidebar-box">
+          <p class="muted">Checklist</p>
+
+          <ul id="checklist" class="checklist" aria-label="Checklist del viaje">
+            <li class="check-item">
+              <label>
+                <input type="checkbox" checked />
+                <span>Pasaporte / DNI</span>
+              </label>
+            </li>
+
+            <li class="check-item">
+              <label>
+                <input type="checkbox" checked />
+                <span>Hotel</span>
+              </label>
+            </li>
+
+            <li class="check-item">
+              <label>
+                <input type="checkbox" />
+                <span>Oyster / Contactless</span>
+              </label>
+            </li>
+
+            <li class="check-item">
+              <label>
+                <input type="checkbox" />
+                <span>Adaptador UK</span>
+              </label>
+            </li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="content">
+        <section class="content-head">
+          <div>
+            <h2>Planes en Londres</h2>
+            <p class="muted">Lista de planes</p>
+          </div>
+        </section>
+
+        <section class="cards" aria-label="Lista de planes">
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Camden Market</h3>
+                <p class="muted">Comida callejera + tiendas.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Paseo</span>
+                <span class="badge badge--must">IMPRESCINDIBLE</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>British Museum</h3>
+                <p class="muted">Entrada gratis, ir temprano.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Museo</span>
+                <span class="badge badge--nice">RECOMENDADO</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Notting Hill + Portobello</h3>
+                <p class="muted">Paseo bonito + fotos.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Paseo</span>
+                <span class="badge badge--optional">OPCIONAL</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Big Ben & Westminster</h3>
+                <p class="muted">Ver el Parlamento, el Big Ben y pasear por el Támesis.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Monumento</span>
+                <span class="badge badge--must">IMPRESCINDIBLE</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Andén 9¾ + tienda Harry Potter</h3>
+                <p class="muted">Foto en King's Cross y visitar la tienda oficial.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Harry Potter</span>
+                <span class="badge badge--nice">RECOMENDADO</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Tower Bridge</h3>
+                <p class="muted">Ver el famoso puente de Londres y cruzarlo andando.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Monumento</span>
+                <span class="badge badge--must">IMPRESCINDIBLE</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0">
+            <div class="card-row">
+              <div class="card-info">
+                <h3>Fish & Chips</h3>
+                <p class="muted">Probar un sitio típico.</p>
+              </div>
+
+              <div class="card-meta">
+                <span class="tag">Comida</span>
+                <span class="badge badge--optional">OPCIONAL</span>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
