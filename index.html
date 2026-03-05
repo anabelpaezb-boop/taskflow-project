@@ -13,7 +13,7 @@
         <div class="logo" aria-hidden="true">LDN</div>
         <div>
           <h1>London Trip Planner</h1>
-          <p class="muted">Maqueta HTML + CSS</p>
+          <p class="muted">Maqueta HTML + CSS + JS </p>
         </div>
       </div>
     </header>
@@ -87,110 +87,54 @@
         <section class="content-head">
           <div>
             <h2>Planes en Londres</h2>
-            <p class="muted">Lista de planes</p>
+            <p class="muted">Lista de planes (añade y borra tareas)</p>
           </div>
         </section>
 
+        <!-- Buscador -->
+        <section class="panel">
+          <label class="muted" for="search">Buscar tarea</label>
+          <input id="search" class="input" type="search" placeholder="Ej: big ben, museo..." />
+        </section>
+
+        <!-- Formulario para añadir tareas -->
+        <section class="panel">
+          <form id="task-form" class="task-form" autocomplete="off">
+            <input
+              id="task-input"
+              class="input"
+              type="text"
+              placeholder="Añade una tarea (ej: Ver Big Ben)"
+              maxlength="60"
+              required
+            />
+
+            <select id="task-tag" class="select" aria-label="Categoría">
+              <option value="Paseo">Paseo</option>
+              <option value="Museo">Museo</option>
+              <option value="Monumento">Monumento</option>
+              <option value="Comida">Comida</option>
+              <option value="Harry Potter">Harry Potter</option>
+              <option value="Plan">Plan</option>
+            </select>
+
+            <select id="task-priority" class="select" aria-label="Prioridad">
+              <option value="must">Imprescindible</option>
+              <option value="nice" selected>Recomendado</option>
+              <option value="optional">Opcional</option>
+            </select>
+
+            <button class="btn" type="submit">Añadir</button>
+          </form>
+        </section>
+
+        <!-- Aquí app.js pintará las tareas como "cards" -->
         <section class="cards" aria-label="Lista de planes">
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Camden Market</h3>
-                <p class="muted">Comida callejera + tiendas.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Paseo</span>
-                <span class="badge badge--must">IMPRESCINDIBLE</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>British Museum</h3>
-                <p class="muted">Entrada gratis, ir temprano.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Museo</span>
-                <span class="badge badge--nice">RECOMENDADO</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Notting Hill + Portobello</h3>
-                <p class="muted">Paseo bonito + fotos.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Paseo</span>
-                <span class="badge badge--optional">OPCIONAL</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Big Ben & Westminster</h3>
-                <p class="muted">Ver el Parlamento, el Big Ben y pasear por el Támesis.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Monumento</span>
-                <span class="badge badge--must">IMPRESCINDIBLE</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Andén 9¾ + tienda Harry Potter</h3>
-                <p class="muted">Foto en King's Cross y visitar la tienda oficial.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Harry Potter</span>
-                <span class="badge badge--nice">RECOMENDADO</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Tower Bridge</h3>
-                <p class="muted">Ver el famoso puente de Londres y cruzarlo andando.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Monumento</span>
-                <span class="badge badge--must">IMPRESCINDIBLE</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <div class="card-row">
-              <div class="card-info">
-                <h3>Fish & Chips</h3>
-                <p class="muted">Probar un sitio típico.</p>
-              </div>
-
-              <div class="card-meta">
-                <span class="tag">Comida</span>
-                <span class="badge badge--optional">OPCIONAL</span>
-              </div>
-            </div>
-          </article>
+          <ul id="task-list" class="task-list"></ul>
         </section>
       </main>
     </div>
+
+    <script src="./app.js"></script>
   </body>
 </html>

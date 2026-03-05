@@ -1,5 +1,5 @@
 :root {
-  --bg: #5577bb; 
+  --bg: #5577bb;
   --panel: rgba(255, 255, 255, 0.08);
   --border: rgba(255, 255, 255, 0.16);
   --text: #eef2ff;
@@ -31,7 +31,7 @@ h1, h2, h3 { margin: 0; }
 
 /* HEADER */
 .header {
-  display: flex;               
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--gap);
@@ -44,7 +44,7 @@ h1, h2, h3 { margin: 0; }
 }
 
 .brand {
-  display: flex;               
+  display: flex;
   align-items: center;
   gap: 12px;
 }
@@ -62,7 +62,7 @@ h1, h2, h3 { margin: 0; }
 
 /* LAYOUT */
 .layout {
-  display: flex;               
+  display: flex;
   gap: var(--gap);
   padding: var(--pad);
   max-width: 1100px;
@@ -91,13 +91,13 @@ h1, h2, h3 { margin: 0; }
   list-style: none;
   padding: 0;
   margin: 10px 0 0;
-  display: flex;               
+  display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .legend-item {
-  display: flex;               
+  display: flex;
   align-items: center;
   gap: 10px;
 }
@@ -112,13 +112,13 @@ h1, h2, h3 { margin: 0; }
   list-style: none;
   padding: 0;
   margin: 12px 0 0;
-  display: flex;               
+  display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .check-item label {
-  display: flex;               
+  display: flex;
   gap: 10px;
   align-items: center;
 }
@@ -128,23 +128,84 @@ h1, h2, h3 { margin: 0; }
   height: 18px;
 }
 
-.check-item.is-done span {
+/* Tachado SIN JS */
+.check-item input:checked + span {
   text-decoration: line-through;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
+/* CONTENT */
 .content { flex: 1; min-width: 0; }
 
 .content-head {
-  display: flex;               
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--gap);
   margin-bottom: 12px;
 }
 
+/* Paneles (buscador + form) */
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.10);
+  color: var(--text);
+  outline: none;
+}
+
+.input::placeholder {
+  color: rgba(238, 242, 255, 0.65);
+}
+
+.select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.10);
+  color: var(--text);
+}
+
+.btn {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Form añadir tareas */
+.task-form {
+  display: flex;            
+  gap: 10px;
+  align-items: center;
+}
+
+/* Lista dinámica de tareas */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;           
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Contenedor de cards */
 .cards {
-  display: flex;               
+  display: flex;
   flex-direction: column;
   gap: 12px;
 }
@@ -168,14 +229,14 @@ h1, h2, h3 { margin: 0; }
 }
 
 .card-row {
-  display: flex;               
+  display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
 }
 
 .card-meta {
-  display: flex;               
+  display: flex;
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
@@ -200,13 +261,25 @@ h1, h2, h3 { margin: 0; }
 .badge--nice { background: var(--nice); }
 .badge--optional { background: var(--optional); }
 
-/* Responsive: sidebar se recoloca en móvil */
+/* Botón eliminar */
+.delete-btn {
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.14);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Se recoloca en móvil */
 @media (max-width: 900px) {
   .layout { flex-direction: column; }
   .sidebar { width: 100%; flex: 1 1 auto; }
   .content-head { flex-direction: column; align-items: flex-start; }
 }
 
+/* Adaptacion para el movil */
 @media (max-width: 520px) {
   .card-row { flex-direction: column; align-items: flex-start; }
+  .task-form { flex-direction: column; align-items: stretch; }
 }
