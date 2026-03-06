@@ -1,0 +1,25 @@
+{
+  "name": "taskflow-project",
+  "version": "1.0.0",
+  "description": "Proyecto de prácticas.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anabelpaezb-boop/taskflow-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anabelpaezb-boop/taskflow-project/issues"
+  },
+  "homepage": "https://github.com/anabelpaezb-boop/taskflow-project#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  }
+}

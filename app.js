@@ -1,15 +1,66 @@
-// Elementos del DOM
+// botón del header
+const themeToggle = document.querySelector("#theme-toggle");
+
+// clave para guardar el tema en localStorage
+const THEME_KEY = "taskflow_theme";
+
+/* Función que aplica el tema claro u oscuro */
+function applyTheme(theme) {
+  const root = document.documentElement;
+
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+}
+
+/* Al iniciar la web revisamos si el usuario ya tenía
+   una preferencia guardada */
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY);
+
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  }
+}
+
+// activar tema al cargar
+initTheme();
+
+/* Evento para cambiar entre claro y oscuro */
+themeToggle.addEventListener("click", () => {
+  const isDark = document.documentElement.classList.contains("dark");
+
+  const newTheme = isDark ? "light" : "dark";
+
+  applyTheme(newTheme);
+
+  // guardamos la preferencia
+  localStorage.setItem(THEME_KEY, newTheme);
+});
+
+
+/* TASKFLOW - GESTIÓN DE TAREAS */
+
+// elementos del DOM
 const form = document.querySelector("#task-form");
 const input = document.querySelector("#task-input");
-const list = document.querySelector("#task-list");
-const search = document.querySelector("#search");
+const taskList = document.querySelector("#task-list");
+const searchInput = document.querySelector("#search");
+
 const tagSelect = document.querySelector("#task-tag");
 const prioritySelect = document.querySelector("#task-priority");
 
-// Clave de LocalStorage
-const STORAGE_KEY = "taskflow_tasks_v1";
+// clave donde guardamos tareas
+const STORAGE_KEY = "taskflow_tasks";
 
-// Tareas por defecto (solo la primera vez)
+// array donde guardamos las tareas
+let tasks = [];
+
+
+/* TAREAS INICIALES (solo la primera vez) */
+
 const DEFAULT_TASKS = [
   { text: "Camden Market", tag: "Paseo", priority: "must" },
   { text: "British Museum", tag: "Museo", priority: "nice" },
@@ -17,27 +68,29 @@ const DEFAULT_TASKS = [
   { text: "Big Ben & Westminster", tag: "Monumento", priority: "must" },
   { text: "Andén 9¾ + tienda Harry Potter", tag: "Harry Potter", priority: "nice" },
   { text: "Tower Bridge", tag: "Monumento", priority: "must" },
-  { text: "Fish & Chips", tag: "Comida", priority: "optional" },
+  { text: "Fish & Chips", tag: "Comida", priority: "optional" }
 ];
 
-// Estado
-let tasks = [];
 
-// Guardar
+/* GUARDAR Y CARGAR DATOS*/
+
+/* Guardamos las tareas en LocalStorage */
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-// Cargar (y si no hay nada, poner defaults)
+/* Cargamos tareas al iniciar la app */
 function loadTasks() {
   const saved = localStorage.getItem(STORAGE_KEY);
 
+  // si no hay nada guardado usamos las tareas por defecto
   if (!saved) {
     tasks = DEFAULT_TASKS;
-    saveTasks(); // importante: para que no se vuelvan a crear al refrescar
+    saveTasks();
     return;
   }
 
+  // si sí hay tareas guardadas
   try {
     const parsed = JSON.parse(saved);
     tasks = Array.isArray(parsed) ? parsed : [];
@@ -46,88 +99,156 @@ function loadTasks() {
   }
 }
 
-// Convertir prioridad a clase + texto
-function getPriorityUI(priority) {
-  // priority: must | nice | optional
-  if (priority === "must") return { cls: "badge--must", text: "IMPRESCINDIBLE" };
-  if (priority === "optional") return { cls: "badge--optional", text: "OPCIONAL" };
-  return { cls: "badge--nice", text: "RECOMENDADO" }; // por defecto
+
+/*  PRIORIDAD → BADGE VISUAL */
+
+function getPriorityBadge(priority) {
+
+  if (priority === "must") {
+    return {
+      text: "IMPRESCINDIBLE",
+      color: "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-100"
+    };
+  }
+
+  if (priority === "optional") {
+    return {
+      text: "OPCIONAL",
+      color: "bg-sky-100 text-sky-900 dark:bg-sky-500/20 dark:text-sky-100"
+    };
+  }
+
+  // recomendado por defecto
+  return {
+    text: "RECOMENDADO",
+    color: "bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-100"
+  };
 }
 
-// Crear nodo de tarea (usa tu estilo de card)
+
+/*  CREAR TARJETA DE TAREA*/
+
 function createTaskNode(task, index) {
+
   const li = document.createElement("li");
 
-  const pr = getPriorityUI(task.priority);
+  const badge = getPriorityBadge(task.priority);
 
   li.innerHTML = `
-    <article class="card" tabindex="0">
-      <div class="card-row">
-        <div class="card-info">
-          <h3></h3>
-          <p class="muted">Tarea guardada en LocalStorage.</p>
+    <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-900">
+
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+
+        <div>
+          <h3 class="font-bold text-base">${task.text}</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Tarea guardada en LocalStorage
+          </p>
         </div>
 
-        <div class="card-meta">
-          <span class="tag"></span>
-          <span class="badge ${pr.cls}"></span>
-          <button class="delete-btn" type="button">Eliminar</button>
+        <div class="flex items-center gap-2 flex-wrap">
+
+          <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold dark:border-slate-800 dark:bg-slate-950/40">
+            ${task.tag}
+          </span>
+
+          <span class="rounded-full border border-slate-200 px-2 py-1 text-xs font-semibold ${badge.color}">
+            ${badge.text}
+          </span>
+
+          <button class="delete-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-950">
+            Eliminar
+          </button>
+
         </div>
+
       </div>
+
     </article>
   `;
 
-  li.querySelector("h3").textContent = task.text;
-  li.querySelector(".tag").textContent = task.tag || "Plan";
-  li.querySelector(".badge").textContent = pr.text;
-
-  // Eliminar
+  /* Botón eliminar */
   li.querySelector(".delete-btn").addEventListener("click", () => {
+
+    // eliminamos la tarea del array
     tasks.splice(index, 1);
+
+    // guardamos cambios
     saveTasks();
-    renderTasks(search.value);
+
+    // volvemos a renderizar
+    renderTasks(searchInput.value);
   });
 
   return li;
 }
 
-// Pintar lista (con filtro de búsqueda)
-function renderTasks(filterText = "") {
-  list.innerHTML = "";
 
-  const q = filterText.trim().toLowerCase();
+/*  MOSTRAR TAREAS EN PANTALLA */
+
+function renderTasks(filterText = "") {
+
+  // limpiamos la lista antes de pintar
+  taskList.innerHTML = "";
+
+  const query = filterText.toLowerCase().trim();
 
   tasks.forEach((task, index) => {
-    if (q && !task.text.toLowerCase().includes(q)) return;
-    list.appendChild(createTaskNode(task, index));
+
+    // filtro de búsqueda 
+    if (query && !task.text.toLowerCase().includes(query)) return;
+
+    const node = createTaskNode(task, index);
+
+    taskList.appendChild(node);
   });
 }
 
-// Añadir tarea desde formulario
+
+/* AÑADIR NUEVA TAREA */
+
 form.addEventListener("submit", (e) => {
+
   e.preventDefault();
 
   const text = input.value.trim();
+
   if (!text) return;
 
-  // Para mantenerlo simple, añadimos como RECOMENDADO y tag "Plan"
-const tag = tagSelect.value;
-const priority = prioritySelect.value;
+  const tag = tagSelect.value;
+  const priority = prioritySelect.value;
 
-tasks.push({ text, tag, priority });
+  // añadimos nueva tarea
+  tasks.push({
+    text,
+    tag,
+    priority
+  });
 
-saveTasks();
-renderTasks(search.value);
+  // guardamos
+  saveTasks();
 
-input.value = "";
-input.focus();
+  // actualizamos lista
+  renderTasks(searchInput.value);
+
+  // limpiar input
+  input.value = "";
+
+  input.focus();
 });
 
-// BONUS: búsqueda en tiempo real
-search.addEventListener("input", () => {
-  renderTasks(search.value);
+
+/* BUSCADOR */
+
+searchInput.addEventListener("input", () => {
+  renderTasks(searchInput.value);
 });
 
-// Init
+
+/*  INICIALIZACIÓN */
+
+// cargar tareas guardadas
 loadTasks();
+
+// mostrarlas en pantalla
 renderTasks();
