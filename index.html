@@ -8,6 +8,7 @@
   </head>
 
   <body class="min-h-screen bg-slate-200 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+    <!-- HEADER -->
     <header class="sticky top-0 z-10 border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/70">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <div class="flex items-center gap-3">
@@ -21,25 +22,31 @@
           </div>
         </div>
 
+        <!-- BOTÓN MODO OSCURO -->
         <button
           id="theme-toggle"
           type="button"
-          class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:focus:ring-slate-700"
+          aria-label="Cambiar modo oscuro"
+          class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 dark:focus:ring-slate-700"
         >
           🌙 / ☀️
         </button>
       </div>
     </header>
 
+    <!-- LAYOUT PRINCIPAL -->
     <div class="mx-auto grid max-w-6xl gap-4 px-4 py-5 lg:grid-cols-[280px_1fr]">
+      <!-- BARRA LATERAL -->
       <aside class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 class="text-base font-bold">Mi viaje</h2>
 
+        <!-- FECHAS -->
         <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
           <p class="text-sm text-slate-600 dark:text-slate-400">Fechas</p>
           <p class="mt-1 text-sm"><strong>10–16 Abril</strong> · 6 días</p>
         </section>
 
+        <!-- LEYENDA DE PRIORIDADES -->
         <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
           <p class="text-sm text-slate-600 dark:text-slate-400">Leyenda de prioridades</p>
 
@@ -67,6 +74,7 @@
           </ul>
         </section>
 
+        <!-- CHECKLIST -->
         <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
           <p class="text-sm text-slate-600 dark:text-slate-400">Checklist</p>
 
@@ -102,36 +110,82 @@
         </section>
       </aside>
 
+      <!-- CONTENIDO PRINCIPAL -->
       <main class="min-w-0">
+        <!-- TÍTULO -->
         <section class="mb-3">
           <h2 class="text-base font-bold">Planes en Londres</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400">Añade, borra y busca tareas</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Añade, completa, elimina y busca tareas
+          </p>
         </section>
 
+        <!-- FILTROS + ESTADÍSTICAS -->
+        <section class="mb-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
+          <!-- FILTROS -->
+          <div class="flex flex-wrap gap-2">
+            <button
+              id="filter-all"
+              type="button"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:focus:ring-slate-700"
+            >
+              Todas
+            </button>
+
+            <button
+              id="filter-pending"
+              type="button"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:focus:ring-slate-700"
+            >
+              Pendientes
+            </button>
+
+            <button
+              id="filter-completed"
+              type="button"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:focus:ring-slate-700"
+            >
+              Completadas
+            </button>
+          </div>
+
+          <!-- ESTADÍSTICAS -->
+          <div class="text-sm text-slate-600 dark:text-slate-400">
+            Total: <span id="stat-total" class="font-semibold">0</span> |
+            Completadas: <span id="stat-completed" class="font-semibold">0</span> |
+            Pendientes: <span id="stat-pending" class="font-semibold">0</span>
+          </div>
+        </section>
+
+        <!-- BUSCADOR -->
         <section class="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <label class="text-sm text-slate-600 dark:text-slate-400" for="search">Buscar tarea</label>
           <input
             id="search"
-            class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
+            class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
             type="search"
             placeholder="Ej: big ben, museo..."
           />
         </section>
 
+        <!-- FORMULARIO PARA AÑADIR TAREAS -->
         <section class="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <form id="task-form" class="flex flex-col gap-2 sm:flex-row sm:items-center" autocomplete="off">
+            <!-- TÍTULO -->
             <input
               id="task-input"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
               type="text"
               placeholder="Añade una tarea (ej: Ver Big Ben)"
               maxlength="60"
               required
             />
 
+            <!-- CATEGORÍA -->
+            <label for="task-tag" class="sr-only">Categoría</label>
             <select
               id="task-tag"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
             >
               <option value="Paseo">Paseo</option>
               <option value="Museo">Museo</option>
@@ -141,17 +195,20 @@
               <option value="Plan">Plan</option>
             </select>
 
+            <!-- PRIORIDAD -->
+            <label for="task-priority" class="sr-only">Prioridad</label>
             <select
               id="task-priority"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
             >
               <option value="must">Imprescindible</option>
               <option value="nice" selected>Recomendado</option>
               <option value="optional">Opcional</option>
             </select>
 
+            <!-- BOTÓN AÑADIR -->
             <button
-              class="rounded-xl border border-slate-200 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:focus:ring-slate-700"
+              class="rounded-xl border border-slate-200 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:focus:ring-slate-700"
               type="submit"
             >
               Añadir
@@ -159,6 +216,7 @@
           </form>
         </section>
 
+        <!-- LISTA DE TAREAS -->
         <section aria-label="Lista de planes">
           <ul id="task-list" class="flex flex-col gap-3"></ul>
         </section>

@@ -1,10 +1,10 @@
 // botón del header
 const themeToggle = document.querySelector("#theme-toggle");
 
-// clave para guardar el tema en localStorage
+// clave donde guardamos la preferencia del tema
 const THEME_KEY = "taskflow_theme";
 
-/* Función que aplica el tema claro u oscuro */
+/* función que aplica el tema */
 function applyTheme(theme) {
   const root = document.documentElement;
 
@@ -15,8 +15,7 @@ function applyTheme(theme) {
   }
 }
 
-/* Al iniciar la web revisamos si el usuario ya tenía
-   una preferencia guardada */
+/* revisar si el usuario ya tenía un tema guardado */
 function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY);
 
@@ -25,141 +24,186 @@ function initTheme() {
   }
 }
 
-// activar tema al cargar
 initTheme();
 
-/* Evento para cambiar entre claro y oscuro */
+/* botón para cambiar entre claro y oscuro */
 themeToggle.addEventListener("click", () => {
   const isDark = document.documentElement.classList.contains("dark");
-
   const newTheme = isDark ? "light" : "dark";
 
   applyTheme(newTheme);
-
-  // guardamos la preferencia
   localStorage.setItem(THEME_KEY, newTheme);
 });
 
 
-/* TASKFLOW - GESTIÓN DE TAREAS */
+/* =====================================================
+   ELEMENTOS DEL DOM
+   ===================================================== */
 
-// elementos del DOM
 const form = document.querySelector("#task-form");
 const input = document.querySelector("#task-input");
-const taskList = document.querySelector("#task-list");
-const searchInput = document.querySelector("#search");
-
 const tagSelect = document.querySelector("#task-tag");
 const prioritySelect = document.querySelector("#task-priority");
 
-// clave donde guardamos tareas
+const taskList = document.querySelector("#task-list");
+
+const searchInput = document.querySelector("#search");
+
+const filterAll = document.querySelector("#filter-all");
+const filterPending = document.querySelector("#filter-pending");
+const filterCompleted = document.querySelector("#filter-completed");
+
+const statTotal = document.querySelector("#stat-total");
+const statCompleted = document.querySelector("#stat-completed");
+const statPending = document.querySelector("#stat-pending");
+
+
+/* =====================================================
+   CONFIGURACIÓN
+   ===================================================== */
+
+// clave usada en LocalStorage
 const STORAGE_KEY = "taskflow_tasks";
 
-// array donde guardamos las tareas
+// array donde guardamos todas las tareas
 let tasks = [];
 
-
-/* TAREAS INICIALES (solo la primera vez) */
-
-const DEFAULT_TASKS = [
-  { text: "Camden Market", tag: "Paseo", priority: "must" },
-  { text: "British Museum", tag: "Museo", priority: "nice" },
-  { text: "Notting Hill + Portobello", tag: "Paseo", priority: "optional" },
-  { text: "Big Ben & Westminster", tag: "Monumento", priority: "must" },
-  { text: "Andén 9¾ + tienda Harry Potter", tag: "Harry Potter", priority: "nice" },
-  { text: "Tower Bridge", tag: "Monumento", priority: "must" },
-  { text: "Fish & Chips", tag: "Comida", priority: "optional" }
-];
+// filtro actual
+let currentFilter = "all";
 
 
-/* GUARDAR Y CARGAR DATOS*/
+/* =====================================================
+   GUARDAR Y CARGAR DATOS
+   ===================================================== */
 
-/* Guardamos las tareas en LocalStorage */
+// guardar tareas en LocalStorage
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-/* Cargamos tareas al iniciar la app */
+
+// cargar tareas cuando se inicia la app
 function loadTasks() {
   const saved = localStorage.getItem(STORAGE_KEY);
 
-  // si no hay nada guardado usamos las tareas por defecto
   if (!saved) {
-    tasks = DEFAULT_TASKS;
-    saveTasks();
+    tasks = [];
     return;
   }
 
-  // si sí hay tareas guardadas
   try {
     const parsed = JSON.parse(saved);
-    tasks = Array.isArray(parsed) ? parsed : [];
+
+    // si no es un array, dejamos array vacío
+    if (!Array.isArray(parsed)) {
+      tasks = [];
+      return;
+    }
+
+    // adaptar tareas antiguas al nuevo formato
+    tasks = parsed.map((task, index) => {
+      return {
+        id: task.id ?? Date.now() + index,
+        title: task.title ?? task.text ?? "Tarea sin título",
+        completed: task.completed ?? false,
+        createdAt: task.createdAt ?? new Date().toISOString(),
+        tag: task.tag ?? "Plan",
+        priority: task.priority ?? "nice"
+      };
+    });
+
   } catch {
     tasks = [];
   }
 }
 
 
-/*  PRIORIDAD → BADGE VISUAL */
+/* =====================================================
+   ESTADÍSTICAS
+   ===================================================== */
 
-function getPriorityBadge(priority) {
+function updateStats() {
+  const total = tasks.length;
+  const completed = tasks.filter(task => task.completed).length;
+  const pending = total - completed;
 
-  if (priority === "must") {
-    return {
-      text: "IMPRESCINDIBLE",
-      color: "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-100"
-    };
-  }
-
-  if (priority === "optional") {
-    return {
-      text: "OPCIONAL",
-      color: "bg-sky-100 text-sky-900 dark:bg-sky-500/20 dark:text-sky-100"
-    };
-  }
-
-  // recomendado por defecto
-  return {
-    text: "RECOMENDADO",
-    color: "bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-100"
-  };
+  statTotal.textContent = total;
+  statCompleted.textContent = completed;
+  statPending.textContent = pending;
 }
 
 
-/*  CREAR TARJETA DE TAREA*/
+/* =====================================================
+   PRIORIDAD → ESTILO VISUAL
+   ===================================================== */
 
-function createTaskNode(task, index) {
+function getPriorityStyles(priority) {
+  if (priority === "must") {
+    return "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-100";
+  }
 
+  if (priority === "optional") {
+    return "bg-sky-100 text-sky-900 dark:bg-sky-500/20 dark:text-sky-100";
+  }
+
+  return "bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-100";
+}
+
+function getPriorityText(priority) {
+  if (priority === "must") return "IMPRESCINDIBLE";
+  if (priority === "optional") return "OPCIONAL";
+  return "RECOMENDADO";
+}
+
+
+/* =====================================================
+   CREAR TARJETA DE TAREA
+   ===================================================== */
+
+function createTaskNode(task) {
   const li = document.createElement("li");
 
-  const badge = getPriorityBadge(task.priority);
+  const priorityClass = getPriorityStyles(task.priority);
+  const priorityText = getPriorityText(task.priority);
 
   li.innerHTML = `
     <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-900">
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <div>
-          <h3 class="font-bold text-base">${task.text}</h3>
-          <p class="text-sm text-slate-600 dark:text-slate-400">
-            Tarea guardada en LocalStorage
-          </p>
+        <div class="flex items-center gap-3">
+          <!-- checkbox para marcar tarea completada -->
+          <input type="checkbox" class="task-checkbox h-4 w-4" ${task.completed ? "checked" : ""}>
+
+          <!-- título de la tarea -->
+          <div>
+            <h3 class="font-semibold ${task.completed ? "line-through opacity-60" : ""}">
+              ${task.title}
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              ${new Date(task.createdAt).toLocaleDateString()}
+            </p>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- categoría -->
           <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold dark:border-slate-800 dark:bg-slate-950/40">
             ${task.tag}
           </span>
 
-          <span class="rounded-full border border-slate-200 px-2 py-1 text-xs font-semibold ${badge.color}">
-            ${badge.text}
+          <!-- prioridad -->
+          <span class="rounded-full border border-slate-200 px-2 py-1 text-xs font-semibold ${priorityClass}">
+            ${priorityText}
           </span>
 
-          <button class="delete-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-950">
+          <!-- botón eliminar -->
+          <button
+            class="delete-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+            aria-label="Eliminar tarea"
+          >
             Eliminar
           </button>
-
         </div>
 
       </div>
@@ -167,88 +211,132 @@ function createTaskNode(task, index) {
     </article>
   `;
 
-  /* Botón eliminar */
-  li.querySelector(".delete-btn").addEventListener("click", () => {
 
-    // eliminamos la tarea del array
-    tasks.splice(index, 1);
+  /* ================================
+     MARCAR COMO COMPLETADA
+     ================================ */
 
-    // guardamos cambios
+  li.querySelector(".task-checkbox").addEventListener("change", (e) => {
+    task.completed = e.target.checked;
+
     saveTasks();
+    renderTasks();
+  });
 
-    // volvemos a renderizar
-    renderTasks(searchInput.value);
+
+  /* ================================
+     ELIMINAR TAREA
+     ================================ */
+
+  li.querySelector(".delete-btn").addEventListener("click", () => {
+    tasks = tasks.filter(t => t.id !== task.id);
+
+    saveTasks();
+    renderTasks();
   });
 
   return li;
 }
 
 
-/*  MOSTRAR TAREAS EN PANTALLA */
+/* =====================================================
+   MOSTRAR TAREAS
+   ===================================================== */
 
-function renderTasks(filterText = "") {
-
-  // limpiamos la lista antes de pintar
+function renderTasks() {
+  // limpiar lista antes de volver a pintar
   taskList.innerHTML = "";
 
-  const query = filterText.toLowerCase().trim();
+  let filteredTasks = tasks;
 
-  tasks.forEach((task, index) => {
+  /* aplicar filtro */
+  if (currentFilter === "pending") {
+    filteredTasks = tasks.filter(task => !task.completed);
+  }
 
-    // filtro de búsqueda 
-    if (query && !task.text.toLowerCase().includes(query)) return;
+  if (currentFilter === "completed") {
+    filteredTasks = tasks.filter(task => task.completed);
+  }
 
-    const node = createTaskNode(task, index);
+  /* aplicar buscador */
+  const searchText = searchInput.value.toLowerCase().trim();
 
+  filteredTasks = filteredTasks.filter(task =>
+    (task.title || "").toLowerCase().includes(searchText)
+  );
+
+  /* renderizar cada tarea */
+  filteredTasks.forEach(task => {
+    const node = createTaskNode(task);
     taskList.appendChild(node);
   });
+
+  updateStats();
 }
 
 
-/* AÑADIR NUEVA TAREA */
+/* =====================================================
+   AÑADIR NUEVA TAREA
+   ===================================================== */
 
 form.addEventListener("submit", (e) => {
-
   e.preventDefault();
 
-  const text = input.value.trim();
+  const title = input.value.trim();
 
-  if (!text) return;
+  if (!title) return;
 
-  const tag = tagSelect.value;
-  const priority = prioritySelect.value;
+  const newTask = {
+    id: Date.now(),
+    title: title,
+    completed: false,
+    createdAt: new Date().toISOString(),
+    tag: tagSelect.value,
+    priority: prioritySelect.value
+  };
 
-  // añadimos nueva tarea
-  tasks.push({
-    text,
-    tag,
-    priority
-  });
+  tasks.push(newTask);
 
-  // guardamos
   saveTasks();
+  renderTasks();
 
-  // actualizamos lista
-  renderTasks(searchInput.value);
-
-  // limpiar input
   input.value = "";
-
   input.focus();
-});
+}); 
 
 
-/* BUSCADOR */
+/* =====================================================
+   BUSCADOR
+   ===================================================== */
 
 searchInput.addEventListener("input", () => {
-  renderTasks(searchInput.value);
+  renderTasks();
 });
 
 
-/*  INICIALIZACIÓN */
+/* =====================================================
+   FILTROS
+   ===================================================== */
 
-// cargar tareas guardadas
+filterAll.addEventListener("click", () => {
+  currentFilter = "all";
+  renderTasks();
+});
+
+filterPending.addEventListener("click", () => {
+  currentFilter = "pending";
+  renderTasks();
+});
+
+filterCompleted.addEventListener("click", () => {
+  currentFilter = "completed";
+  renderTasks();
+});
+
+
+/* =====================================================
+   INICIALIZACIÓN
+   ===================================================== */
+
 loadTasks();
-
-// mostrarlas en pantalla
 renderTasks();
