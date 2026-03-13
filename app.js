@@ -1,5 +1,5 @@
 /* =====================================================
-   TASKFLOW - APP DE TAREAS
+   GOINGFLY - APP DE VIAJES
    ===================================================== */
 
 
@@ -7,10 +7,7 @@
    MODO OSCURO
    ===================================================== */
 
-// botón del header
 const themeToggle = document.querySelector("#theme-toggle");
-
-// clave donde guardamos la preferencia del tema
 const THEME_KEY = "taskflow_theme";
 
 /**
@@ -40,7 +37,6 @@ function initTheme() {
 
 initTheme();
 
-/* Cambiar tema */
 themeToggle.addEventListener("click", () => {
   const isDark = document.documentElement.classList.contains("dark");
   const newTheme = isDark ? "light" : "dark";
@@ -79,34 +75,126 @@ const progressText = document.querySelector("#progress-text");
 
 const clearAllBtn = document.querySelector("#clear-all");
 
+const destinationInput = document.querySelector("#trip-destination");
+const durationSelect = document.querySelector("#trip-duration");
+
+const summaryDestination = document.querySelector("#summary-destination");
+const summaryDuration = document.querySelector("#summary-duration");
+
 
 /* =====================================================
    CONFIGURACIÓN
    ===================================================== */
 
-const STORAGE_KEY = "taskflow_tasks";
+const TASKS_KEY = "taskflow_tasks";
+const TRIP_KEY = "goingfly_trip";
 
 let tasks = [];
 let currentFilter = "all";
 let currentDayFilter = "all";
 
+/* Datos del viaje */
+let tripConfig = {
+  destination: "Londres",
+  duration: 6,
+};
+
 
 /* =====================================================
-   GUARDAR Y CARGAR DATOS
+   GUARDAR Y CARGAR CONFIGURACIÓN DEL VIAJE
+   ===================================================== */
+
+/**
+ * Guarda la configuración del viaje
+ */
+function saveTripConfig() {
+  localStorage.setItem(TRIP_KEY, JSON.stringify(tripConfig));
+}
+
+/**
+ * Carga la configuración del viaje
+ */
+function loadTripConfig() {
+  const saved = localStorage.getItem(TRIP_KEY);
+
+  if (!saved) return;
+
+  try {
+    const parsed = JSON.parse(saved);
+
+    tripConfig = {
+      destination: parsed.destination || "Londres",
+      duration: Number(parsed.duration) || 6,
+    };
+  } catch {
+    tripConfig = {
+      destination: "Londres",
+      duration: 6,
+    };
+  }
+}
+
+/**
+ * Actualiza el resumen del viaje en el panel lateral
+ */
+function updateTripSummary() {
+  summaryDestination.textContent = tripConfig.destination || "Sin destino";
+  summaryDuration.textContent = `${tripConfig.duration} días`;
+}
+
+/**
+ * Genera las opciones de día según la duración del viaje
+ */
+function generateDayOptions() {
+  // limpiar select del formulario
+  daySelect.innerHTML = "";
+
+  // limpiar select del filtro
+  dayFilterSelect.innerHTML = `<option value="all">Todos los días</option>`;
+
+  for (let i = 1; i <= tripConfig.duration; i++) {
+    const dayText = `Día ${i}`;
+
+    const optionForm = document.createElement("option");
+    optionForm.value = dayText;
+    optionForm.textContent = dayText;
+    daySelect.appendChild(optionForm);
+
+    const optionFilter = document.createElement("option");
+    optionFilter.value = dayText;
+    optionFilter.textContent = dayText;
+    dayFilterSelect.appendChild(optionFilter);
+  }
+}
+
+/**
+ * Actualiza la configuración del viaje desde el formulario lateral
+ */
+function syncTripConfigUI() {
+  destinationInput.value = tripConfig.destination;
+  durationSelect.value = String(tripConfig.duration);
+
+  updateTripSummary();
+  generateDayOptions();
+}
+
+
+/* =====================================================
+   GUARDAR Y CARGAR TAREAS
    ===================================================== */
 
 /**
  * Guarda las tareas en LocalStorage
  */
 function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
 }
 
 /**
  * Carga tareas y adapta formatos antiguos
  */
 function loadTasks() {
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved = localStorage.getItem(TASKS_KEY);
 
   if (!saved) {
     tasks = [];
@@ -172,7 +260,7 @@ function updateProgress() {
    ===================================================== */
 
 /**
- * Devuelve clases Tailwind según la prioridad
+ * Devuelve clases de Tailwind según la prioridad
  * @param {string} priority
  * @returns {string}
  */
@@ -235,8 +323,6 @@ function editTask(task) {
  */
 function createTaskNode(task) {
   const li = document.createElement("li");
-
-  // animación sencilla al aparecer
   li.className = "transition duration-300 ease-out";
 
   const priorityClass = getPriorityStyles(task.priority);
@@ -296,19 +382,19 @@ function createTaskNode(task) {
     </article>
   `;
 
-  /* Marcar tarea como completada */
+  /* Marcar completada */
   li.querySelector(".task-checkbox").addEventListener("change", (e) => {
     task.completed = e.target.checked;
     saveTasks();
     renderTasks();
   });
 
-  /* Editar tarea */
+  /* Editar */
   li.querySelector(".edit-btn").addEventListener("click", () => {
     editTask(task);
   });
 
-  /* Eliminar tarea */
+  /* Eliminar */
   li.querySelector(".delete-btn").addEventListener("click", () => {
     tasks = tasks.filter((t) => t.id !== task.id);
     saveTasks();
@@ -328,7 +414,7 @@ function createTaskNode(task) {
  * - filtro por estado
  * - filtro por día
  * - búsqueda
- * - orden por día del viaje
+ * - orden por día
  */
 function renderTasks() {
   taskList.innerHTML = "";
@@ -349,14 +435,14 @@ function renderTasks() {
     filteredTasks = filteredTasks.filter((task) => task.day === currentDayFilter);
   }
 
-  /* buscador por texto */
+  /* buscador */
   const searchText = searchInput.value.toLowerCase().trim();
 
   filteredTasks = filteredTasks.filter((task) =>
     (task.title || "").toLowerCase().includes(searchText)
   );
 
-  /* ordenar por día del viaje */
+  /* ordenar por día */
   filteredTasks = [...filteredTasks].sort((a, b) => {
     const dayA = parseInt((a.day || "Día 1").replace("Día ", ""));
     const dayB = parseInt((b.day || "Día 1").replace("Día ", ""));
@@ -460,8 +546,67 @@ clearAllBtn.addEventListener("click", () => {
 
 
 /* =====================================================
+   CAMBIOS EN DESTINO Y DURACIÓN
+   ===================================================== */
+
+/**
+ * Cuando cambia el destino, lo guardamos y actualizamos el resumen
+ */
+destinationInput.addEventListener("input", () => {
+  tripConfig.destination = destinationInput.value.trim() || "Sin destino";
+  saveTripConfig();
+  updateTripSummary();
+});
+
+/**
+ * Cuando cambia la duración:
+ * - actualizamos el viaje
+ * - regeneramos días
+ * - limpiamos el filtro si ya no existe ese día
+ * - corregimos tareas que apunten a un día fuera del rango
+ */
+durationSelect.addEventListener("change", () => {
+  tripConfig.duration = Number(durationSelect.value);
+  saveTripConfig();
+
+  // regenerar selectores de días
+  generateDayOptions();
+
+  // si el filtro actual ya no existe, volver a "all"
+  const maxDay = tripConfig.duration;
+
+  if (currentDayFilter !== "all") {
+    const dayNumber = parseInt(currentDayFilter.replace("Día ", ""));
+    if (dayNumber > maxDay) {
+      currentDayFilter = "all";
+      dayFilterSelect.value = "all";
+    }
+  }
+
+  // corregir tareas que queden fuera del número de días
+  tasks = tasks.map((task) => {
+    const taskDayNumber = parseInt((task.day || "Día 1").replace("Día ", ""));
+    if (taskDayNumber > maxDay) {
+      return {
+        ...task,
+        day: `Día ${maxDay}`,
+      };
+    }
+    return task;
+  });
+
+  saveTripConfig();
+  saveTasks();
+  updateTripSummary();
+  renderTasks();
+});
+
+
+/* =====================================================
    INICIALIZACIÓN
    ===================================================== */
 
+loadTripConfig();
+syncTripConfigUI();
 loadTasks();
 renderTasks();

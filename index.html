@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>London Trip Planner</title>
+    <title>GoingFly</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
 
@@ -13,12 +13,12 @@
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <div class="flex items-center gap-3">
           <div class="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white font-extrabold shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            LDN
+            GF
           </div>
 
           <div>
-            <h1 class="text-lg font-bold">London Trip Planner</h1>
-            <p class="text-sm text-slate-600 dark:text-slate-400">Taskflow con Tailwind CSS</p>
+            <h1 class="text-lg font-bold">GoingFly</h1>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Planifica tu viaje por días</p>
           </div>
         </div>
 
@@ -40,10 +40,51 @@
       <aside class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 class="text-base font-bold">Mi viaje</h2>
 
-        <!-- FECHAS -->
+        <!-- CONFIGURACIÓN DEL VIAJE -->
         <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
-          <p class="text-sm text-slate-600 dark:text-slate-400">Fechas</p>
-          <p class="mt-1 text-sm"><strong>10–16 Abril</strong> · 6 días</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Configuración del viaje</p>
+
+          <div class="mt-3 space-y-3">
+            <div>
+              <label for="trip-destination" class="text-sm text-slate-600 dark:text-slate-400">Destino</label>
+              <input
+                id="trip-destination"
+                type="text"
+                value="Londres"
+                placeholder="Ej: París"
+                class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
+              />
+            </div>
+
+            <div>
+              <label for="trip-duration" class="text-sm text-slate-600 dark:text-slate-400">Duración del viaje</label>
+              <select
+                id="trip-duration"
+                class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+              >
+                <option value="2">2 días</option>
+                <option value="3">3 días</option>
+                <option value="4">4 días</option>
+                <option value="5">5 días</option>
+                <option value="6" selected>6 días</option>
+                <option value="7">7 días</option>
+                <option value="8">8 días</option>
+                <option value="9">9 días</option>
+                <option value="10">10 días</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESUMEN -->
+        <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
+          <p class="text-sm text-slate-600 dark:text-slate-400">Resumen</p>
+          <p class="mt-1 text-sm">
+            Destino: <strong id="summary-destination">Londres</strong>
+          </p>
+          <p class="mt-1 text-sm">
+            Duración: <strong id="summary-duration">6 días</strong>
+          </p>
         </section>
 
         <!-- LEYENDA -->
@@ -55,21 +96,21 @@
               <span class="rounded-full border border-slate-200 bg-red-100 px-2 py-1 text-xs font-semibold text-red-900 dark:border-slate-800 dark:bg-red-500/20 dark:text-red-100">
                 IMPRESCINDIBLE
               </span>
-              <span class="text-sm text-slate-600 dark:text-slate-400">Sí o sí hay que ir</span>
+              <span class="text-sm text-slate-600 dark:text-slate-400">Sí o sí hay que hacerlo</span>
             </li>
 
             <li class="flex items-center gap-2">
               <span class="rounded-full border border-slate-200 bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 dark:border-slate-800 dark:bg-amber-500/20 dark:text-amber-100">
                 RECOMENDADO
               </span>
-              <span class="text-sm text-slate-600 dark:text-slate-400">Muy buena idea si da tiempo</span>
+              <span class="text-sm text-slate-600 dark:text-slate-400">Buena idea si da tiempo</span>
             </li>
 
             <li class="flex items-center gap-2">
               <span class="rounded-full border border-slate-200 bg-sky-100 px-2 py-1 text-xs font-semibold text-sky-900 dark:border-slate-800 dark:bg-sky-500/20 dark:text-sky-100">
                 OPCIONAL
               </span>
-              <span class="text-sm text-slate-600 dark:text-slate-400">Si sobra tiempo / plan relajado</span>
+              <span class="text-sm text-slate-600 dark:text-slate-400">Plan relajado o secundario</span>
             </li>
           </ul>
         </section>
@@ -89,21 +130,21 @@
             <li>
               <label class="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked class="h-4 w-4 accent-slate-900 dark:accent-slate-200" />
-                <span>Hotel</span>
+                <span>Reserva / alojamiento</span>
               </label>
             </li>
 
             <li>
               <label class="flex items-center gap-2 text-sm">
                 <input type="checkbox" class="h-4 w-4 accent-slate-900 dark:accent-slate-200" />
-                <span>Oyster / Contactless</span>
+                <span>Transporte / tarjetas</span>
               </label>
             </li>
 
             <li>
               <label class="flex items-center gap-2 text-sm">
                 <input type="checkbox" class="h-4 w-4 accent-slate-900 dark:accent-slate-200" />
-                <span>Adaptador UK</span>
+                <span>Equipaje listo</span>
               </label>
             </li>
           </ul>
@@ -114,13 +155,13 @@
       <main class="min-w-0">
         <!-- TÍTULO -->
         <section class="mb-3">
-          <h2 class="text-base font-bold">Planes en Londres</h2>
+          <h2 class="text-base font-bold">Planes del viaje</h2>
           <p class="text-sm text-slate-600 dark:text-slate-400">
-            Añade, completa, edita, elimina y busca tareas
+            Añade, completa, edita, elimina y organiza tareas por día
           </p>
         </section>
 
-        <!-- FILTROS POR ESTADO + ESTADÍSTICAS -->
+        <!-- FILTROS ESTADO + ESTADÍSTICAS -->
         <section class="mb-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
           <div class="flex flex-wrap gap-2">
             <button
@@ -163,12 +204,6 @@
             class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-48"
           >
             <option value="all">Todos los días</option>
-            <option value="Día 1">Día 1</option>
-            <option value="Día 2">Día 2</option>
-            <option value="Día 3">Día 3</option>
-            <option value="Día 4">Día 4</option>
-            <option value="Día 5">Día 5</option>
-            <option value="Día 6">Día 6</option>
           </select>
         </section>
 
@@ -194,7 +229,7 @@
             id="search"
             class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
             type="search"
-            placeholder="Ej: big ben, museo..."
+            placeholder="Ej: museo, restaurante, check-in..."
           />
         </section>
 
@@ -206,7 +241,7 @@
               id="task-input"
               class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700 sm:flex-1"
               type="text"
-              placeholder="Añade una tarea (ej: Ver Big Ben)"
+              placeholder="Añade una tarea (ej: Visitar monumento principal)"
               maxlength="60"
               required
             />
@@ -216,14 +251,7 @@
             <select
               id="task-day"
               class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-36"
-            >
-              <option value="Día 1">Día 1</option>
-              <option value="Día 2">Día 2</option>
-              <option value="Día 3">Día 3</option>
-              <option value="Día 4">Día 4</option>
-              <option value="Día 5">Día 5</option>
-              <option value="Día 6">Día 6</option>
-            </select>
+            ></select>
 
             <!-- CATEGORÍA -->
             <label for="task-tag" class="sr-only">Categoría</label>
@@ -235,7 +263,8 @@
               <option value="Museo">Museo</option>
               <option value="Monumento">Monumento</option>
               <option value="Comida">Comida</option>
-              <option value="Harry Potter">Harry Potter</option>
+              <option value="Compras">Compras</option>
+              <option value="Transporte">Transporte</option>
               <option value="Plan">Plan</option>
             </select>
 
@@ -250,7 +279,7 @@
               <option value="optional">Opcional</option>
             </select>
 
-            <!-- BOTÓN AÑADIR -->
+            <!-- AÑADIR -->
             <button
               class="rounded-xl border border-slate-200 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:focus:ring-slate-700"
               type="submit"
@@ -258,7 +287,7 @@
               Añadir
             </button>
 
-            <!-- BOTÓN BORRAR TODAS -->
+            <!-- BORRAR TODAS -->
             <button
               id="clear-all"
               class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow focus:outline-none focus:ring-2 focus:ring-red-300 dark:border-red-900 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20"

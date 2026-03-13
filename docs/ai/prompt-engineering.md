@@ -1,35 +1,85 @@
 # Prompt Engineering aplicado al desarrollo
 
-En este documento se recopilan distintos prompts utilizados para interactuar con herramientas de inteligencia artificial durante el desarrollo de TaskFlow.
+En esta sección se documentan diferentes prompts utilizados para trabajar con inteligencia artificial durante el desarrollo del proyecto.
 
-El objetivo es mejorar la calidad de las respuestas generadas por la IA.
+El objetivo es entender cómo formular instrucciones claras para obtener mejores resultados.
 
-## Prompt con rol
+---
 
-Ejemplo:
+# Prompt 1
 
 Actúa como un desarrollador senior de JavaScript y revisa este código.
-Este tipo de prompt ayuda a obtener respuestas más estructuradas.
 
-## Prompt con ejemplos
+Este prompt ayuda a obtener respuestas más profesionales y detalladas.
 
-Se proporcionan ejemplos antes de pedir una solución.
-Esto permite que la IA entienda mejor el formato esperado.
+---
 
-## Prompt con razonamiento paso a paso
+# Prompt 2
 
-Ejemplo:
+Explícame este código paso a paso.
 
-Explica paso a paso cómo funciona esta función y qué mejoras se pueden aplicar.
-Esto ayuda a comprender mejor el funcionamiento del código.
+Este prompt es útil para entender funciones complejas.
 
-## Prompt con restricciones
+---
 
-Ejemplo:
+# Prompt 3
 
-Genera una función en JavaScript que filtre tareas completadas pero usando solo métodos de array.
-Las restricciones ayudan a obtener respuestas más específicas.
+Refactoriza esta función para que sea más clara y eficiente.
 
-## Conclusión
+Permite mejorar código existente.
 
-El prompt engineering permite mejorar considerablemente la calidad de las respuestas de la IA.
+---
+
+# Prompt 4
+
+Genera una función en JavaScript que filtre tareas completadas.
+
+Este prompt permite generar código rápidamente.
+
+---
+
+# Prompt 5
+
+Sugiere mejoras para una aplicación de tareas.
+
+Este prompt se utilizó para obtener ideas para el proyecto.
+
+Las ideas sugeridas fueron:
+
+- añadir edición de tareas
+- añadir barra de progreso
+- añadir filtros
+- añadir animaciones
+- añadir categorías
+
+---
+
+# Prompt 6
+
+Genera comentarios JSDoc para esta función.
+
+Esto ayuda a documentar el código.
+
+---
+
+# Prompt 7
+
+Optimiza este código JavaScript.
+
+Se utilizó para mejorar funciones largas.
+
+---
+
+# Prompt 8
+
+Sugiere funcionalidades para una aplicación de planificación de viajes.
+
+Este prompt ayudó a transformar el proyecto en **GoingFly**, una aplicación para planificar viajes.
+
+---
+
+# Conclusión
+
+La calidad de las respuestas depende mucho de cómo se formula el prompt.
+
+Los prompts claros y específicos producen mejores resultados.

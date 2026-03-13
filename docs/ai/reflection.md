@@ -1,34 +1,67 @@
-# Reflexión sobre el uso de IA en programación
+# Reflexión sobre el uso de inteligencia artificial
 
-Durante el desarrollo del proyecto TaskFlow se utilizaron distintas herramientas de inteligencia artificial para mejorar el flujo de trabajo.
+Durante el desarrollo del proyecto TaskFlow / GoingFly se utilizaron herramientas de inteligencia artificial para mejorar el proceso de programación.
 
-## Tareas donde la IA fue más útil
+---
 
-La IA resultó especialmente útil para:
+# Tareas donde la IA fue más útil
 
-- explicar conceptos técnicos
-- detectar errores en el código
-- generar funciones base
-- sugerir mejoras de diseño
+La IA fue especialmente útil en:
 
-## Limitaciones observadas
+- generación de código
+- explicación de conceptos
+- sugerencias de mejoras
+- refactorización de funciones
 
-En algunos casos la IA generó:
+También ayudó a generar ideas para ampliar la aplicación.
 
-- código incorrecto
-- soluciones poco eficientes
-- explicaciones demasiado genéricas
+Por ejemplo:
 
-Por ello es importante revisar siempre el código antes de utilizarlo.
+- añadir filtros de tareas
+- añadir barra de progreso
+- permitir editar tareas
+- añadir selección de día del viaje
 
-## Riesgos de depender demasiado de la IA
+---
 
-Un uso excesivo de la IA puede reducir la capacidad de razonamiento del desarrollador si se utiliza sin comprender el código generado.
+# Casos donde la IA falló
 
-## Cuándo prefiero programar sin IA
+En algunos casos la IA generó código que no funcionaba directamente en el proyecto.
 
-Para problemas simples o cuando quiero entender profundamente un algoritmo, prefiero resolverlo sin ayuda externa.
+Esto ocurrió porque:
 
-## Conclusión
+- no conocía todo el contexto del código
+- algunas funciones no estaban definidas
+- el código necesitaba adaptarse al proyecto existente
 
-Las herramientas de IA son una ayuda muy potente para el desarrollo moderno, pero deben utilizarse como apoyo y no como sustituto del conocimiento técnico.
+Por eso fue necesario revisar y ajustar el código manualmente.
+
+---
+
+# Riesgos de depender demasiado de la IA
+
+Depender demasiado de la IA puede tener algunos riesgos:
+
+- aceptar código sin entenderlo
+- generar soluciones incorrectas
+- perder práctica en programación
+
+Por eso es importante usar la IA como herramienta de apoyo y no como sustituto del conocimiento.
+
+---
+
+# Cuándo prefiero programar sin IA
+
+En tareas pequeñas o cuando conozco bien el problema, prefiero escribir el código manualmente.
+
+Esto permite entender mejor cómo funciona la solución.
+
+---
+
+# Conclusión
+
+La inteligencia artificial puede ser una herramienta muy potente para el desarrollo.
+
+Permite acelerar el trabajo, aprender conceptos nuevos y mejorar proyectos.
+
+Sin embargo, el desarrollador sigue siendo responsable de entender y revisar el código generado.

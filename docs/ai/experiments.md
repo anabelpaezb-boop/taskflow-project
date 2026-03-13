@@ -1,30 +1,79 @@
-# Experimentos con IA en programación
+# Experimentos con inteligencia artificial
 
-En este documento se describen varios experimentos realizados para comparar el desarrollo con y sin inteligencia artificial.
+En esta sección se comparan tareas realizadas con y sin ayuda de IA.
 
-## Experimento 1
+El objetivo es evaluar cómo la inteligencia artificial puede ayudar en el desarrollo.
 
-Problema: crear una función que filtre tareas completadas.
+---
 
-Primero se resolvió el problema sin ayuda de IA.
+# Experimento 1
 
-Después se resolvió utilizando un asistente de IA.
+Problema:
 
-### Comparación
+Crear una función que cuente cuántas tareas están completadas.
 
-- tiempo invertido
-- claridad del código
-- facilidad de comprensión
+Sin IA:
 
-## Experimento 2
+Se implementó una función utilizando un bucle.
 
-Problema: refactorizar una función larga del proyecto TaskFlow.
+Con IA:
 
-Se comparó:
+La IA sugirió usar el método `filter`.
 
-- versión original
-- versión mejorada con ayuda de IA
+Resultado:
 
-## Conclusión
+La solución con IA fue más corta y más clara.
 
-El uso de IA puede acelerar el desarrollo, pero es importante revisar manualmente el código generado.
+---
+
+# Experimento 2
+
+Problema:
+
+Crear un filtro para mostrar tareas completadas.
+
+Sin IA:
+
+Se implementó manualmente utilizando condiciones.
+
+Con IA:
+
+La IA sugirió usar `array.filter()`.
+
+Resultado:
+
+El código generado fue más eficiente.
+
+---
+
+# Experimento 3
+
+Problema:
+
+Añadir nuevas funcionalidades a la aplicación.
+
+Sin IA:
+
+Se pensaron algunas ideas básicas.
+
+Con IA:
+
+La IA sugirió mejoras como:
+
+- edición de tareas
+- barra de progreso
+- animaciones
+- filtros
+- selección de día del viaje
+
+Resultado:
+
+El proyecto se amplió con nuevas funcionalidades.
+
+---
+
+# Conclusión
+
+La IA puede acelerar el desarrollo y sugerir ideas útiles.
+
+Sin embargo, es importante revisar siempre el código generado para evitar errores.
