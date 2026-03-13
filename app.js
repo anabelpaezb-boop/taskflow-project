@@ -1,10 +1,22 @@
+/* =====================================================
+   TASKFLOW - APP DE TAREAS
+   ===================================================== */
+
+
+/* =====================================================
+   MODO OSCURO
+   ===================================================== */
+
 // botón del header
 const themeToggle = document.querySelector("#theme-toggle");
 
 // clave donde guardamos la preferencia del tema
 const THEME_KEY = "taskflow_theme";
 
-/* función que aplica el tema */
+/**
+ * Aplica el tema claro u oscuro
+ * @param {string} theme
+ */
 function applyTheme(theme) {
   const root = document.documentElement;
 
@@ -15,7 +27,9 @@ function applyTheme(theme) {
   }
 }
 
-/* revisar si el usuario ya tenía un tema guardado */
+/**
+ * Carga el tema guardado en localStorage
+ */
 function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY);
 
@@ -26,7 +40,7 @@ function initTheme() {
 
 initTheme();
 
-/* botón para cambiar entre claro y oscuro */
+/* cambiar entre claro y oscuro */
 themeToggle.addEventListener("click", () => {
   const isDark = document.documentElement.classList.contains("dark");
   const newTheme = isDark ? "light" : "dark";
@@ -42,6 +56,7 @@ themeToggle.addEventListener("click", () => {
 
 const form = document.querySelector("#task-form");
 const input = document.querySelector("#task-input");
+const daySelect = document.querySelector("#task-day");
 const tagSelect = document.querySelector("#task-tag");
 const prioritySelect = document.querySelector("#task-priority");
 
@@ -57,15 +72,20 @@ const statTotal = document.querySelector("#stat-total");
 const statCompleted = document.querySelector("#stat-completed");
 const statPending = document.querySelector("#stat-pending");
 
+const progressBar = document.querySelector("#progress-bar");
+const progressText = document.querySelector("#progress-text");
+
+const clearAllBtn = document.querySelector("#clear-all");
+
 
 /* =====================================================
    CONFIGURACIÓN
    ===================================================== */
 
-// clave usada en LocalStorage
+// clave del LocalStorage
 const STORAGE_KEY = "taskflow_tasks";
 
-// array donde guardamos todas las tareas
+// array principal de tareas
 let tasks = [];
 
 // filtro actual
@@ -76,13 +96,16 @@ let currentFilter = "all";
    GUARDAR Y CARGAR DATOS
    ===================================================== */
 
-// guardar tareas en LocalStorage
+/**
+ * Guarda las tareas en localStorage
+ */
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-
-// cargar tareas cuando se inicia la app
+/**
+ * Carga tareas guardadas y adapta versiones antiguas
+ */
 function loadTasks() {
   const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -94,24 +117,21 @@ function loadTasks() {
   try {
     const parsed = JSON.parse(saved);
 
-    // si no es un array, dejamos array vacío
     if (!Array.isArray(parsed)) {
       tasks = [];
       return;
     }
 
-    // adaptar tareas antiguas al nuevo formato
-    tasks = parsed.map((task, index) => {
-      return {
-        id: task.id ?? Date.now() + index,
-        title: task.title ?? task.text ?? "Tarea sin título",
-        completed: task.completed ?? false,
-        createdAt: task.createdAt ?? new Date().toISOString(),
-        tag: task.tag ?? "Plan",
-        priority: task.priority ?? "nice"
-      };
-    });
-
+    // Adaptamos tareas antiguas al formato nuevo
+    tasks = parsed.map((task, index) => ({
+      id: task.id ?? Date.now() + index,
+      title: task.title ?? task.text ?? "Tarea sin título",
+      completed: task.completed ?? false,
+      createdAt: task.createdAt ?? new Date().toISOString(),
+      day: task.day ?? "Día 1",
+      tag: task.tag ?? "Plan",
+      priority: task.priority ?? "nice",
+    }));
   } catch {
     tasks = [];
   }
@@ -119,12 +139,15 @@ function loadTasks() {
 
 
 /* =====================================================
-   ESTADÍSTICAS
+   ESTADÍSTICAS Y PROGRESO
    ===================================================== */
 
+/**
+ * Actualiza total, completadas y pendientes
+ */
 function updateStats() {
   const total = tasks.length;
-  const completed = tasks.filter(task => task.completed).length;
+  const completed = tasks.filter((task) => task.completed).length;
   const pending = total - completed;
 
   statTotal.textContent = total;
@@ -132,11 +155,29 @@ function updateStats() {
   statPending.textContent = pending;
 }
 
+/**
+ * Actualiza la barra de progreso
+ */
+function updateProgress() {
+  const total = tasks.length;
+  const completed = tasks.filter((task) => task.completed).length;
+
+  const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  progressBar.style.width = `${percentage}%`;
+  progressText.textContent = `${percentage}%`;
+}
+
 
 /* =====================================================
-   PRIORIDAD → ESTILO VISUAL
+   PRIORIDAD
    ===================================================== */
 
+/**
+ * Devuelve clases Tailwind según prioridad
+ * @param {string} priority
+ * @returns {string}
+ */
 function getPriorityStyles(priority) {
   if (priority === "must") {
     return "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-100";
@@ -149,6 +190,11 @@ function getPriorityStyles(priority) {
   return "bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-100";
 }
 
+/**
+ * Devuelve el texto visible de la prioridad
+ * @param {string} priority
+ * @returns {string}
+ */
 function getPriorityText(priority) {
   if (priority === "must") return "IMPRESCINDIBLE";
   if (priority === "optional") return "OPCIONAL";
@@ -157,49 +203,93 @@ function getPriorityText(priority) {
 
 
 /* =====================================================
+   EDITAR TAREAS
+   ===================================================== */
+
+/**
+ * Permite editar el título de una tarea
+ * @param {object} task
+ */
+function editTask(task) {
+  const newTitle = prompt("Edita el nombre de la tarea:", task.title);
+
+  // si cancela, no hacemos nada
+  if (newTitle === null) return;
+
+  const cleanTitle = newTitle.trim();
+
+  // si queda vacío, tampoco hacemos nada
+  if (!cleanTitle) return;
+
+  task.title = cleanTitle;
+
+  saveTasks();
+  renderTasks();
+}
+
+
+/* =====================================================
    CREAR TARJETA DE TAREA
    ===================================================== */
 
+/**
+ * Crea el nodo HTML de una tarea
+ * @param {object} task
+ * @returns {HTMLLIElement}
+ */
 function createTaskNode(task) {
   const li = document.createElement("li");
+
+  // animación al aparecer
+  li.className = "animate-[fadeIn_0.3s_ease]";
 
   const priorityClass = getPriorityStyles(task.priority);
   const priorityText = getPriorityText(task.priority);
 
   li.innerHTML = `
     <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-900">
-
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <div class="flex items-center gap-3">
-          <!-- checkbox para marcar tarea completada -->
-          <input type="checkbox" class="task-checkbox h-4 w-4" ${task.completed ? "checked" : ""}>
+        <div class="flex items-start gap-3">
+          <!-- checkbox para completar -->
+          <input type="checkbox" class="task-checkbox mt-1 h-4 w-4" ${task.completed ? "checked" : ""}>
 
-          <!-- título de la tarea -->
           <div>
             <h3 class="font-semibold ${task.completed ? "line-through opacity-60" : ""}">
               ${task.title}
             </h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400">
-              ${new Date(task.createdAt).toLocaleDateString()}
+
+            <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 font-semibold dark:border-slate-800 dark:bg-slate-950/40">
+                ${task.day}
+              </span>
+
+              <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 font-semibold dark:border-slate-800 dark:bg-slate-950/40">
+                ${task.tag}
+              </span>
+
+              <span class="rounded-full border border-slate-200 px-2 py-1 font-semibold ${priorityClass}">
+                ${priorityText}
+              </span>
+            </div>
+
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Creada: ${new Date(task.createdAt).toLocaleDateString()}
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <!-- categoría -->
-          <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold dark:border-slate-800 dark:bg-slate-950/40">
-            ${task.tag}
-          </span>
+          <button
+            class="edit-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+            type="button"
+          >
+            Editar
+          </button>
 
-          <!-- prioridad -->
-          <span class="rounded-full border border-slate-200 px-2 py-1 text-xs font-semibold ${priorityClass}">
-            ${priorityText}
-          </span>
-
-          <!-- botón eliminar -->
           <button
             class="delete-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+            type="button"
             aria-label="Eliminar tarea"
           >
             Eliminar
@@ -207,30 +297,24 @@ function createTaskNode(task) {
         </div>
 
       </div>
-
     </article>
   `;
 
-
-  /* ================================
-     MARCAR COMO COMPLETADA
-     ================================ */
-
+  /* marcar completada */
   li.querySelector(".task-checkbox").addEventListener("change", (e) => {
     task.completed = e.target.checked;
-
     saveTasks();
     renderTasks();
   });
 
+  /* editar tarea */
+  li.querySelector(".edit-btn").addEventListener("click", () => {
+    editTask(task);
+  });
 
-  /* ================================
-     ELIMINAR TAREA
-     ================================ */
-
+  /* eliminar tarea */
   li.querySelector(".delete-btn").addEventListener("click", () => {
-    tasks = tasks.filter(t => t.id !== task.id);
-
+    tasks = tasks.filter((t) => t.id !== task.id);
     saveTasks();
     renderTasks();
   });
@@ -240,38 +324,41 @@ function createTaskNode(task) {
 
 
 /* =====================================================
-   MOSTRAR TAREAS
+   RENDERIZAR TAREAS
    ===================================================== */
 
+/**
+ * Muestra las tareas en pantalla según filtro y búsqueda
+ */
 function renderTasks() {
-  // limpiar lista antes de volver a pintar
   taskList.innerHTML = "";
 
   let filteredTasks = tasks;
 
-  /* aplicar filtro */
+  // filtrar por estado
   if (currentFilter === "pending") {
-    filteredTasks = tasks.filter(task => !task.completed);
+    filteredTasks = tasks.filter((task) => !task.completed);
   }
 
   if (currentFilter === "completed") {
-    filteredTasks = tasks.filter(task => task.completed);
+    filteredTasks = tasks.filter((task) => task.completed);
   }
 
-  /* aplicar buscador */
+  // filtrar por texto del buscador
   const searchText = searchInput.value.toLowerCase().trim();
 
-  filteredTasks = filteredTasks.filter(task =>
+  filteredTasks = filteredTasks.filter((task) =>
     (task.title || "").toLowerCase().includes(searchText)
   );
 
-  /* renderizar cada tarea */
-  filteredTasks.forEach(task => {
+  // pintar tareas
+  filteredTasks.forEach((task) => {
     const node = createTaskNode(task);
     taskList.appendChild(node);
   });
 
   updateStats();
+  updateProgress();
 }
 
 
@@ -291,8 +378,9 @@ form.addEventListener("submit", (e) => {
     title: title,
     completed: false,
     createdAt: new Date().toISOString(),
+    day: daySelect.value,
     tag: tagSelect.value,
-    priority: prioritySelect.value
+    priority: prioritySelect.value,
   };
 
   tasks.push(newTask);
@@ -302,7 +390,7 @@ form.addEventListener("submit", (e) => {
 
   input.value = "";
   input.focus();
-}); 
+});
 
 
 /* =====================================================
@@ -330,6 +418,21 @@ filterPending.addEventListener("click", () => {
 
 filterCompleted.addEventListener("click", () => {
   currentFilter = "completed";
+  renderTasks();
+});
+
+
+/* =====================================================
+   BORRAR TODAS LAS TAREAS
+   ===================================================== */
+
+clearAllBtn.addEventListener("click", () => {
+  const confirmed = confirm("¿Seguro que quieres borrar TODAS las tareas?");
+
+  if (!confirmed) return;
+
+  tasks = [];
+  saveTasks();
   renderTasks();
 });
 

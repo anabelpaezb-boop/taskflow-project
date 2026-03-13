@@ -34,9 +34,9 @@
       </div>
     </header>
 
-    <!-- LAYOUT PRINCIPAL -->
+    <!-- LAYOUT -->
     <div class="mx-auto grid max-w-6xl gap-4 px-4 py-5 lg:grid-cols-[280px_1fr]">
-      <!-- BARRA LATERAL -->
+      <!-- SIDEBAR -->
       <aside class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 class="text-base font-bold">Mi viaje</h2>
 
@@ -46,7 +46,7 @@
           <p class="mt-1 text-sm"><strong>10–16 Abril</strong> · 6 días</p>
         </section>
 
-        <!-- LEYENDA DE PRIORIDADES -->
+        <!-- LEYENDA -->
         <section class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
           <p class="text-sm text-slate-600 dark:text-slate-400">Leyenda de prioridades</p>
 
@@ -110,19 +110,18 @@
         </section>
       </aside>
 
-      <!-- CONTENIDO PRINCIPAL -->
+      <!-- CONTENIDO -->
       <main class="min-w-0">
         <!-- TÍTULO -->
         <section class="mb-3">
           <h2 class="text-base font-bold">Planes en Londres</h2>
           <p class="text-sm text-slate-600 dark:text-slate-400">
-            Añade, completa, elimina y busca tareas
+            Añade, completa, edita, elimina y busca tareas
           </p>
         </section>
 
         <!-- FILTROS + ESTADÍSTICAS -->
         <section class="mb-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
-          <!-- FILTROS -->
           <div class="flex flex-wrap gap-2">
             <button
               id="filter-all"
@@ -149,11 +148,25 @@
             </button>
           </div>
 
-          <!-- ESTADÍSTICAS -->
           <div class="text-sm text-slate-600 dark:text-slate-400">
             Total: <span id="stat-total" class="font-semibold">0</span> |
             Completadas: <span id="stat-completed" class="font-semibold">0</span> |
             Pendientes: <span id="stat-pending" class="font-semibold">0</span>
+          </div>
+        </section>
+
+        <!-- BARRA DE PROGRESO -->
+        <section class="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="mb-2 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+            <span>Progreso del viaje</span>
+            <span id="progress-text">0%</span>
+          </div>
+
+          <div class="h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+            <div
+              id="progress-bar"
+              class="h-full w-0 rounded-full bg-slate-900 transition-all duration-300 dark:bg-slate-100"
+            ></div>
           </div>
         </section>
 
@@ -168,24 +181,38 @@
           />
         </section>
 
-        <!-- FORMULARIO PARA AÑADIR TAREAS -->
+        <!-- FORMULARIO -->
         <section class="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <form id="task-form" class="flex flex-col gap-2 sm:flex-row sm:items-center" autocomplete="off">
+          <form id="task-form" class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center" autocomplete="off">
             <!-- TÍTULO -->
             <input
               id="task-input"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:placeholder:text-slate-500 dark:focus:ring-slate-700 sm:flex-1"
               type="text"
               placeholder="Añade una tarea (ej: Ver Big Ben)"
               maxlength="60"
               required
             />
 
+            <!-- DÍA DEL VIAJE -->
+            <label for="task-day" class="sr-only">Día del viaje</label>
+            <select
+              id="task-day"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-36"
+            >
+              <option value="Día 1">Día 1</option>
+              <option value="Día 2">Día 2</option>
+              <option value="Día 3">Día 3</option>
+              <option value="Día 4">Día 4</option>
+              <option value="Día 5">Día 5</option>
+              <option value="Día 6">Día 6</option>
+            </select>
+
             <!-- CATEGORÍA -->
             <label for="task-tag" class="sr-only">Categoría</label>
             <select
               id="task-tag"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-40"
             >
               <option value="Paseo">Paseo</option>
               <option value="Museo">Museo</option>
@@ -199,24 +226,33 @@
             <label for="task-priority" class="sr-only">Prioridad</label>
             <select
               id="task-priority"
-              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-44"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-40"
             >
               <option value="must">Imprescindible</option>
               <option value="nice" selected>Recomendado</option>
               <option value="optional">Opcional</option>
             </select>
 
-            <!-- BOTÓN AÑADIR -->
+            <!-- AÑADIR -->
             <button
               class="rounded-xl border border-slate-200 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:focus:ring-slate-700"
               type="submit"
             >
               Añadir
             </button>
+
+            <!-- BORRAR TODAS -->
+            <button
+              id="clear-all"
+              class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow focus:outline-none focus:ring-2 focus:ring-red-300 dark:border-red-900 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20"
+              type="button"
+            >
+              Borrar todas
+            </button>
           </form>
         </section>
 
-        <!-- LISTA DE TAREAS -->
+        <!-- LISTA -->
         <section aria-label="Lista de planes">
           <ul id="task-list" class="flex flex-col gap-3"></ul>
         </section>
