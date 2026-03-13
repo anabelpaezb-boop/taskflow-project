@@ -120,7 +120,7 @@
           </p>
         </section>
 
-        <!-- FILTROS + ESTADÍSTICAS -->
+        <!-- FILTROS POR ESTADO + ESTADÍSTICAS -->
         <section class="mb-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
           <div class="flex flex-wrap gap-2">
             <button
@@ -153,6 +153,23 @@
             Completadas: <span id="stat-completed" class="font-semibold">0</span> |
             Pendientes: <span id="stat-pending" class="font-semibold">0</span>
           </div>
+        </section>
+
+        <!-- FILTRO POR DÍA -->
+        <section class="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <label for="day-filter" class="text-sm text-slate-600 dark:text-slate-400">Filtrar por día</label>
+          <select
+            id="day-filter"
+            class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition duration-200 focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700 sm:w-48"
+          >
+            <option value="all">Todos los días</option>
+            <option value="Día 1">Día 1</option>
+            <option value="Día 2">Día 2</option>
+            <option value="Día 3">Día 3</option>
+            <option value="Día 4">Día 4</option>
+            <option value="Día 5">Día 5</option>
+            <option value="Día 6">Día 6</option>
+          </select>
         </section>
 
         <!-- BARRA DE PROGRESO -->
@@ -194,7 +211,7 @@
               required
             />
 
-            <!-- DÍA DEL VIAJE -->
+            <!-- DÍA -->
             <label for="task-day" class="sr-only">Día del viaje</label>
             <select
               id="task-day"
@@ -233,7 +250,7 @@
               <option value="optional">Opcional</option>
             </select>
 
-            <!-- AÑADIR -->
+            <!-- BOTÓN AÑADIR -->
             <button
               class="rounded-xl border border-slate-200 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:focus:ring-slate-700"
               type="submit"
@@ -241,7 +258,7 @@
               Añadir
             </button>
 
-            <!-- BORRAR TODAS -->
+            <!-- BOTÓN BORRAR TODAS -->
             <button
               id="clear-all"
               class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow focus:outline-none focus:ring-2 focus:ring-red-300 dark:border-red-900 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20"

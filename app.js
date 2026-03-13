@@ -28,7 +28,7 @@ function applyTheme(theme) {
 }
 
 /**
- * Carga el tema guardado en localStorage
+ * Carga el tema guardado
  */
 function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY);
@@ -40,7 +40,7 @@ function initTheme() {
 
 initTheme();
 
-/* cambiar entre claro y oscuro */
+/* Cambiar tema */
 themeToggle.addEventListener("click", () => {
   const isDark = document.documentElement.classList.contains("dark");
   const newTheme = isDark ? "light" : "dark";
@@ -68,6 +68,8 @@ const filterAll = document.querySelector("#filter-all");
 const filterPending = document.querySelector("#filter-pending");
 const filterCompleted = document.querySelector("#filter-completed");
 
+const dayFilterSelect = document.querySelector("#day-filter");
+
 const statTotal = document.querySelector("#stat-total");
 const statCompleted = document.querySelector("#stat-completed");
 const statPending = document.querySelector("#stat-pending");
@@ -82,14 +84,11 @@ const clearAllBtn = document.querySelector("#clear-all");
    CONFIGURACIÓN
    ===================================================== */
 
-// clave del LocalStorage
 const STORAGE_KEY = "taskflow_tasks";
 
-// array principal de tareas
 let tasks = [];
-
-// filtro actual
 let currentFilter = "all";
+let currentDayFilter = "all";
 
 
 /* =====================================================
@@ -97,14 +96,14 @@ let currentFilter = "all";
    ===================================================== */
 
 /**
- * Guarda las tareas en localStorage
+ * Guarda las tareas en LocalStorage
  */
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
 /**
- * Carga tareas guardadas y adapta versiones antiguas
+ * Carga tareas y adapta formatos antiguos
  */
 function loadTasks() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -122,7 +121,6 @@ function loadTasks() {
       return;
     }
 
-    // Adaptamos tareas antiguas al formato nuevo
     tasks = parsed.map((task, index) => ({
       id: task.id ?? Date.now() + index,
       title: task.title ?? task.text ?? "Tarea sin título",
@@ -143,7 +141,7 @@ function loadTasks() {
    ===================================================== */
 
 /**
- * Actualiza total, completadas y pendientes
+ * Actualiza estadísticas básicas
  */
 function updateStats() {
   const total = tasks.length;
@@ -174,7 +172,7 @@ function updateProgress() {
    ===================================================== */
 
 /**
- * Devuelve clases Tailwind según prioridad
+ * Devuelve clases Tailwind según la prioridad
  * @param {string} priority
  * @returns {string}
  */
@@ -203,7 +201,7 @@ function getPriorityText(priority) {
 
 
 /* =====================================================
-   EDITAR TAREAS
+   EDITAR TAREA
    ===================================================== */
 
 /**
@@ -213,12 +211,10 @@ function getPriorityText(priority) {
 function editTask(task) {
   const newTitle = prompt("Edita el nombre de la tarea:", task.title);
 
-  // si cancela, no hacemos nada
   if (newTitle === null) return;
 
   const cleanTitle = newTitle.trim();
 
-  // si queda vacío, tampoco hacemos nada
   if (!cleanTitle) return;
 
   task.title = cleanTitle;
@@ -240,8 +236,8 @@ function editTask(task) {
 function createTaskNode(task) {
   const li = document.createElement("li");
 
-  // animación al aparecer
-  li.className = "animate-[fadeIn_0.3s_ease]";
+  // animación sencilla al aparecer
+  li.className = "transition duration-300 ease-out";
 
   const priorityClass = getPriorityStyles(task.priority);
   const priorityText = getPriorityText(task.priority);
@@ -251,7 +247,7 @@ function createTaskNode(task) {
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
         <div class="flex items-start gap-3">
-          <!-- checkbox para completar -->
+          <!-- Checkbox para completar -->
           <input type="checkbox" class="task-checkbox mt-1 h-4 w-4" ${task.completed ? "checked" : ""}>
 
           <div>
@@ -300,19 +296,19 @@ function createTaskNode(task) {
     </article>
   `;
 
-  /* marcar completada */
+  /* Marcar tarea como completada */
   li.querySelector(".task-checkbox").addEventListener("change", (e) => {
     task.completed = e.target.checked;
     saveTasks();
     renderTasks();
   });
 
-  /* editar tarea */
+  /* Editar tarea */
   li.querySelector(".edit-btn").addEventListener("click", () => {
     editTask(task);
   });
 
-  /* eliminar tarea */
+  /* Eliminar tarea */
   li.querySelector(".delete-btn").addEventListener("click", () => {
     tasks = tasks.filter((t) => t.id !== task.id);
     saveTasks();
@@ -328,30 +324,46 @@ function createTaskNode(task) {
    ===================================================== */
 
 /**
- * Muestra las tareas en pantalla según filtro y búsqueda
+ * Muestra las tareas aplicando:
+ * - filtro por estado
+ * - filtro por día
+ * - búsqueda
+ * - orden por día del viaje
  */
 function renderTasks() {
   taskList.innerHTML = "";
 
   let filteredTasks = tasks;
 
-  // filtrar por estado
+  /* filtro por estado */
   if (currentFilter === "pending") {
-    filteredTasks = tasks.filter((task) => !task.completed);
+    filteredTasks = filteredTasks.filter((task) => !task.completed);
   }
 
   if (currentFilter === "completed") {
-    filteredTasks = tasks.filter((task) => task.completed);
+    filteredTasks = filteredTasks.filter((task) => task.completed);
   }
 
-  // filtrar por texto del buscador
+  /* filtro por día */
+  if (currentDayFilter !== "all") {
+    filteredTasks = filteredTasks.filter((task) => task.day === currentDayFilter);
+  }
+
+  /* buscador por texto */
   const searchText = searchInput.value.toLowerCase().trim();
 
   filteredTasks = filteredTasks.filter((task) =>
     (task.title || "").toLowerCase().includes(searchText)
   );
 
-  // pintar tareas
+  /* ordenar por día del viaje */
+  filteredTasks = [...filteredTasks].sort((a, b) => {
+    const dayA = parseInt((a.day || "Día 1").replace("Día ", ""));
+    const dayB = parseInt((b.day || "Día 1").replace("Día ", ""));
+    return dayA - dayB;
+  });
+
+  /* pintar tareas */
   filteredTasks.forEach((task) => {
     const node = createTaskNode(task);
     taskList.appendChild(node);
@@ -375,7 +387,7 @@ form.addEventListener("submit", (e) => {
 
   const newTask = {
     id: Date.now(),
-    title: title,
+    title,
     completed: false,
     createdAt: new Date().toISOString(),
     day: daySelect.value,
@@ -403,7 +415,7 @@ searchInput.addEventListener("input", () => {
 
 
 /* =====================================================
-   FILTROS
+   FILTROS DE ESTADO
    ===================================================== */
 
 filterAll.addEventListener("click", () => {
@@ -418,6 +430,16 @@ filterPending.addEventListener("click", () => {
 
 filterCompleted.addEventListener("click", () => {
   currentFilter = "completed";
+  renderTasks();
+});
+
+
+/* =====================================================
+   FILTRO POR DÍA
+   ===================================================== */
+
+dayFilterSelect.addEventListener("change", () => {
+  currentDayFilter = dayFilterSelect.value;
   renderTasks();
 });
 
