@@ -87,3 +87,7 @@ ai/
 
 Proyecto desarrollado como parte de un ejercicio práctico de desarrollo web.
 
+La aplicación fue probada añadiendo, completando y eliminando tareas.
+
+También se comprobó que los datos permanecen tras recargar la página gracias a LocalStorage.
+
