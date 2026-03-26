@@ -115,11 +115,13 @@ Crea una nueva tarea
   "priority": "must"
 }
 */
-DELETE /tasks/:id
+🔹 PATCH /tasks/:id
+Actualiza parcialmente una tarea
 
+🔹 DELETE /tasks/:id
 Elimina una tarea
 
-## ⚙️ Backend (Fases A, B y C)
+## ⚙️ Backend
 
 ### ✅ Fase A - Configuración del entorno
 - Configuración del servidor con Express
@@ -143,6 +145,27 @@ Esto permite un código más escalable, mantenible y organizado.
   - **400** → datos inválidos  
   - **404** → recurso no encontrado  
   - **500** → error interno del servidor  
+
+### ✅ Fase D - Conexión frontend-backend
+El frontend ha sido refactorizado para eliminar el uso de LocalStorage en la gestión de tareas.
+
+🔌 Comunicación con API
+
+Se utiliza fetch mediante:
+api/client.js
+
+📡 Operaciones implementadas
+- GET → obtener tareas
+- POST → crear tarea
+- PATCH → actualizar tarea
+- DELETE → eliminar tarea
+
+🎯 Gestión de estados en UI
+La interfaz gestiona:
+
+- Carga → feedback visual durante peticiones
+- Éxito → actualización dinámica del DOM
+- Error → mensajes informativos al usuario
 
 ---
 
