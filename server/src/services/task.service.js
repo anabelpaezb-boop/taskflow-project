@@ -1,4 +1,3 @@
-// Array en memoria que simula una base de datos
 let tasks = [];
 
 /**
@@ -10,7 +9,7 @@ function obtenerTodas() {
 }
 
 /**
- * Crea una nueva tarea
+ * Crea una tarea nueva
  * @param {Object} data
  * @returns {Object}
  */
@@ -26,7 +25,6 @@ function crearTarea(data) {
   };
 
   tasks.push(nuevaTarea);
-
   return nuevaTarea;
 }
 
@@ -45,19 +43,23 @@ function eliminarTarea(id) {
 }
 
 /**
- * Cambia el estado completed de una tarea
+ * Actualiza parcialmente una tarea
  * @param {string} id
- * @param {boolean} completed
+ * @param {Object} updates
  * @returns {Object}
  */
-function actualizarEstado(id, completed) {
+function actualizarTarea(id, updates) {
   const task = tasks.find((t) => t.id === id);
 
   if (!task) {
     throw new Error("NOT_FOUND");
   }
 
-  task.completed = completed;
+  if (typeof updates.title !== "undefined") task.title = updates.title;
+  if (typeof updates.completed !== "undefined") task.completed = updates.completed;
+  if (typeof updates.day !== "undefined") task.day = updates.day;
+  if (typeof updates.tag !== "undefined") task.tag = updates.tag;
+  if (typeof updates.priority !== "undefined") task.priority = updates.priority;
 
   return task;
 }
@@ -66,5 +68,5 @@ module.exports = {
   obtenerTodas,
   crearTarea,
   eliminarTarea,
-  actualizarEstado,
+  actualizarTarea,
 };

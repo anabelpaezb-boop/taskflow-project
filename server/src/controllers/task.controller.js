@@ -19,7 +19,6 @@ function createTask(req, res, next) {
   try {
     const { title, day, tag, priority } = req.body;
 
-    // Validación defensiva
     if (!title || typeof title !== "string" || title.trim().length < 3) {
       return res.status(400).json({
         error: "El título es obligatorio y debe tener al menos 3 caracteres.",
@@ -27,21 +26,15 @@ function createTask(req, res, next) {
     }
 
     if (day && typeof day !== "string") {
-      return res.status(400).json({
-        error: "El día debe ser un texto válido.",
-      });
+      return res.status(400).json({ error: "El día debe ser un texto válido." });
     }
 
     if (tag && typeof tag !== "string") {
-      return res.status(400).json({
-        error: "La categoría debe ser un texto válido.",
-      });
+      return res.status(400).json({ error: "La categoría debe ser un texto válido." });
     }
 
     if (priority && typeof priority !== "string") {
-      return res.status(400).json({
-        error: "La prioridad debe ser un texto válido.",
-      });
+      return res.status(400).json({ error: "La prioridad debe ser un texto válido." });
     }
 
     const nuevaTarea = taskService.crearTarea({
@@ -63,9 +56,7 @@ function createTask(req, res, next) {
 function deleteTask(req, res, next) {
   try {
     const { id } = req.params;
-
     taskService.eliminarTarea(id);
-
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -78,15 +69,41 @@ function deleteTask(req, res, next) {
 function patchTask(req, res, next) {
   try {
     const { id } = req.params;
-    const { completed } = req.body;
+    const { title, completed, day, tag, priority } = req.body;
 
-    if (typeof completed !== "boolean") {
+    if (typeof title !== "undefined") {
+      if (typeof title !== "string" || title.trim().length < 3) {
+        return res.status(400).json({
+          error: "El título debe tener al menos 3 caracteres.",
+        });
+      }
+    }
+
+    if (typeof completed !== "undefined" && typeof completed !== "boolean") {
       return res.status(400).json({
         error: "El campo completed debe ser booleano.",
       });
     }
 
-    const updatedTask = taskService.actualizarEstado(id, completed);
+    if (typeof day !== "undefined" && typeof day !== "string") {
+      return res.status(400).json({ error: "El día debe ser un texto válido." });
+    }
+
+    if (typeof tag !== "undefined" && typeof tag !== "string") {
+      return res.status(400).json({ error: "La categoría debe ser un texto válido." });
+    }
+
+    if (typeof priority !== "undefined" && typeof priority !== "string") {
+      return res.status(400).json({ error: "La prioridad debe ser un texto válido." });
+    }
+
+    const updatedTask = taskService.actualizarTarea(id, {
+      title: typeof title !== "undefined" ? title.trim() : undefined,
+      completed,
+      day,
+      tag,
+      priority,
+    });
 
     res.status(200).json(updatedTask);
   } catch (error) {
@@ -99,4 +116,4 @@ module.exports = {
   createTask,
   deleteTask,
   patchTask,
-};            
+};

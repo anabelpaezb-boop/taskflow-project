@@ -81,12 +81,14 @@ const durationSelect = document.querySelector("#trip-duration");
 const summaryDestination = document.querySelector("#summary-destination");
 const summaryDuration = document.querySelector("#summary-duration");
 
+const networkState = document.querySelector("#network-state");
+const networkMessage = document.querySelector("#network-message");
+
 
 /* =====================================================
    CONFIGURACIÓN
    ===================================================== */
 
-const TASKS_KEY = "taskflow_tasks";
 const TRIP_KEY = "goingfly_trip";
 
 let tasks = [];
@@ -98,6 +100,55 @@ let tripConfig = {
   destination: "Londres",
   duration: 6,
 };
+
+
+/* =====================================================
+   ESTADOS DE RED EN UI
+   ===================================================== */
+
+/**
+ * Muestra estado de carga
+ * @param {string} message
+ */
+function showLoading(message = "Cargando...") {
+  networkState.classList.remove("hidden");
+  networkState.className =
+    "mb-3 rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-800";
+  networkMessage.textContent = message;
+}
+
+/**
+ * Muestra estado de error
+ * @param {string} message
+ */
+function showError(message) {
+  networkState.classList.remove("hidden");
+  networkState.className =
+    "mb-3 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm shadow-sm dark:border-red-500 dark:bg-red-500/10";
+  networkMessage.textContent = message;
+}
+
+/**
+ * Muestra estado de éxito
+ * @param {string} message
+ */
+function showSuccess(message) {
+  networkState.classList.remove("hidden");
+  networkState.className =
+    "mb-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm shadow-sm dark:border-emerald-500 dark:bg-emerald-500/10";
+  networkMessage.textContent = message;
+
+  setTimeout(() => {
+    networkState.classList.add("hidden");
+  }, 1800);
+}
+
+/**
+ * Oculta el panel de estado
+ */
+function hideNetworkState() {
+  networkState.classList.add("hidden");
+}
 
 
 /* =====================================================
@@ -146,10 +197,7 @@ function updateTripSummary() {
  * Genera las opciones de día según la duración del viaje
  */
 function generateDayOptions() {
-  // limpiar select del formulario
   daySelect.innerHTML = "";
-
-  // limpiar select del filtro
   dayFilterSelect.innerHTML = `<option value="all">Todos los días</option>`;
 
   for (let i = 1; i <= tripConfig.duration; i++) {
@@ -168,7 +216,7 @@ function generateDayOptions() {
 }
 
 /**
- * Actualiza la configuración del viaje desde el formulario lateral
+ * Sincroniza la UI con la configuración del viaje
  */
 function syncTripConfigUI() {
   destinationInput.value = tripConfig.destination;
@@ -180,46 +228,90 @@ function syncTripConfigUI() {
 
 
 /* =====================================================
-   GUARDAR Y CARGAR TAREAS
+   API - FRONTEND CONECTADO AL BACKEND
    ===================================================== */
 
 /**
- * Guarda las tareas en LocalStorage
+ * Carga tareas desde el backend
  */
-function saveTasks() {
-  localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
-}
-
-/**
- * Carga tareas y adapta formatos antiguos
- */
-function loadTasks() {
-  const saved = localStorage.getItem(TASKS_KEY);
-
-  if (!saved) {
-    tasks = [];
-    return;
-  }
+async function loadTasks() {
+  showLoading("Cargando tareas...");
 
   try {
-    const parsed = JSON.parse(saved);
+    tasks = await window.taskApi.getTasks();
 
-    if (!Array.isArray(parsed)) {
-      tasks = [];
-      return;
-    }
-
-    tasks = parsed.map((task, index) => ({
-      id: task.id ?? Date.now() + index,
-      title: task.title ?? task.text ?? "Tarea sin título",
+    // corregir tareas antiguas o incompletas
+    tasks = tasks.map((task) => ({
+      id: task.id,
+      title: task.title ?? "Tarea sin título",
       completed: task.completed ?? false,
       createdAt: task.createdAt ?? new Date().toISOString(),
       day: task.day ?? "Día 1",
       tag: task.tag ?? "Plan",
       priority: task.priority ?? "nice",
     }));
-  } catch {
-    tasks = [];
+
+    renderTasks();
+    hideNetworkState();
+  } catch (error) {
+    showError(`Error al cargar tareas: ${error.message}`);
+  }
+}
+
+/**
+ * Crea tarea en backend
+ * @param {object} taskData
+ */
+async function createTask(taskData) {
+  showLoading("Creando tarea...");
+
+  try {
+    const newTask = await window.taskApi.createTask(taskData);
+    tasks.push(newTask);
+    renderTasks();
+    showSuccess("Tarea creada correctamente");
+  } catch (error) {
+    showError(`Error al crear tarea: ${error.message}`);
+  }
+}
+
+/**
+ * Actualiza tarea en backend
+ * @param {string} id
+ * @param {object} updates
+ */
+async function updateTask(id, updates) {
+  showLoading("Actualizando tarea...");
+
+  try {
+    const updatedTask = await window.taskApi.patchTask(id, updates);
+
+    tasks = tasks.map((task) => {
+      if (task.id === id) return updatedTask;
+      return task;
+    });
+
+    renderTasks();
+    showSuccess("Tarea actualizada");
+  } catch (error) {
+    showError(`Error al actualizar tarea: ${error.message}`);
+  }
+}
+
+/**
+ * Elimina tarea en backend
+ * @param {string} id
+ */
+async function deleteTask(id) {
+  showLoading("Eliminando tarea...");
+
+  try {
+    await window.taskApi.deleteTask(id);
+    tasks = tasks.filter((task) => task.id !== id);
+    renderTasks();
+    showSuccess("Tarea eliminada");
+  } catch (error) {
+    showError(`Error al eliminar tarea: ${error.message}`);
   }
 }
 
@@ -266,14 +358,14 @@ function updateProgress() {
  */
 function getPriorityStyles(priority) {
   if (priority === "must") {
-    return "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-100";
+    return "bg-red-100 text-red-900 dark:border-red-300/40 dark:bg-red-400/15 dark:text-red-100";
   }
 
   if (priority === "optional") {
-    return "bg-sky-100 text-sky-900 dark:bg-sky-500/20 dark:text-sky-100";
+    return "bg-sky-100 text-sky-900 dark:border-sky-300/40 dark:bg-sky-400/15 dark:text-sky-100";
   }
 
-  return "bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-100";
+  return "bg-amber-100 text-amber-900 dark:border-amber-300/40 dark:bg-amber-400/15 dark:text-amber-100";
 }
 
 /**
@@ -305,10 +397,7 @@ function editTask(task) {
 
   if (!cleanTitle) return;
 
-  task.title = cleanTitle;
-
-  saveTasks();
-  renderTasks();
+  updateTask(task.id, { title: cleanTitle });
 }
 
 
@@ -329,33 +418,32 @@ function createTaskNode(task) {
   const priorityText = getPriorityText(task.priority);
 
   li.innerHTML = `
-    <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-800 dark:bg-slate-900">
+    <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-slate-700 dark:bg-slate-800">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
         <div class="flex items-start gap-3">
-          <!-- Checkbox para completar -->
-          <input type="checkbox" class="task-checkbox mt-1 h-4 w-4" ${task.completed ? "checked" : ""}>
+          <input type="checkbox" class="task-checkbox mt-1 h-4 w-4 accent-slate-900 dark:accent-slate-200" ${task.completed ? "checked" : ""}>
 
           <div>
-            <h3 class="font-semibold ${task.completed ? "line-through opacity-60" : ""}">
+            <h3 class="font-semibold text-slate-900 dark:text-slate-100 ${task.completed ? "line-through opacity-60" : ""}">
               ${task.title}
             </h3>
 
             <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 font-semibold dark:border-slate-800 dark:bg-slate-950/40">
+              <span class="rounded-full border border-slate-300 bg-slate-100 px-2 py-1 font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100">
                 ${task.day}
               </span>
 
-              <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 font-semibold dark:border-slate-800 dark:bg-slate-950/40">
+              <span class="rounded-full border border-slate-300 bg-slate-100 px-2 py-1 font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100">
                 ${task.tag}
               </span>
 
-              <span class="rounded-full border border-slate-200 px-2 py-1 font-semibold ${priorityClass}">
+              <span class="rounded-full border border-slate-300 px-2 py-1 font-semibold ${priorityClass}">
                 ${priorityText}
               </span>
             </div>
 
-            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-300">
               Creada: ${new Date(task.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -363,14 +451,14 @@ function createTaskNode(task) {
 
         <div class="flex flex-wrap items-center gap-2">
           <button
-            class="edit-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+            class="edit-btn rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 dark:focus:ring-slate-400"
             type="button"
           >
             Editar
           </button>
 
           <button
-            class="delete-btn rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:focus:ring-slate-700"
+            class="delete-btn rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 dark:focus:ring-slate-400"
             type="button"
             aria-label="Eliminar tarea"
           >
@@ -384,9 +472,7 @@ function createTaskNode(task) {
 
   /* Marcar completada */
   li.querySelector(".task-checkbox").addEventListener("change", (e) => {
-    task.completed = e.target.checked;
-    saveTasks();
-    renderTasks();
+    updateTask(task.id, { completed: e.target.checked });
   });
 
   /* Editar */
@@ -396,9 +482,7 @@ function createTaskNode(task) {
 
   /* Eliminar */
   li.querySelector(".delete-btn").addEventListener("click", () => {
-    tasks = tasks.filter((t) => t.id !== task.id);
-    saveTasks();
-    renderTasks();
+    deleteTask(task.id);
   });
 
   return li;
@@ -464,27 +548,19 @@ function renderTasks() {
    AÑADIR NUEVA TAREA
    ===================================================== */
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const title = input.value.trim();
 
   if (!title) return;
 
-  const newTask = {
-    id: Date.now(),
+  await createTask({
     title,
-    completed: false,
-    createdAt: new Date().toISOString(),
     day: daySelect.value,
     tag: tagSelect.value,
     priority: prioritySelect.value,
-  };
-
-  tasks.push(newTask);
-
-  saveTasks();
-  renderTasks();
+  });
 
   input.value = "";
   input.focus();
@@ -534,14 +610,21 @@ dayFilterSelect.addEventListener("change", () => {
    BORRAR TODAS LAS TAREAS
    ===================================================== */
 
-clearAllBtn.addEventListener("click", () => {
+clearAllBtn.addEventListener("click", async () => {
   const confirmed = confirm("¿Seguro que quieres borrar TODAS las tareas?");
 
   if (!confirmed) return;
 
-  tasks = [];
-  saveTasks();
-  renderTasks();
+  showLoading("Borrando tareas...");
+
+  try {
+    await Promise.all(tasks.map((task) => window.taskApi.deleteTask(task.id)));
+    tasks = [];
+    renderTasks();
+    showSuccess("Todas las tareas se han borrado");
+  } catch (error) {
+    showError(`Error al borrar tareas: ${error.message}`);
+  }
 });
 
 
@@ -569,10 +652,8 @@ durationSelect.addEventListener("change", () => {
   tripConfig.duration = Number(durationSelect.value);
   saveTripConfig();
 
-  // regenerar selectores de días
   generateDayOptions();
 
-  // si el filtro actual ya no existe, volver a "all"
   const maxDay = tripConfig.duration;
 
   if (currentDayFilter !== "all") {
@@ -583,7 +664,6 @@ durationSelect.addEventListener("change", () => {
     }
   }
 
-  // corregir tareas que queden fuera del número de días
   tasks = tasks.map((task) => {
     const taskDayNumber = parseInt((task.day || "Día 1").replace("Día ", ""));
     if (taskDayNumber > maxDay) {
@@ -595,8 +675,6 @@ durationSelect.addEventListener("change", () => {
     return task;
   });
 
-  saveTripConfig();
-  saveTasks();
   updateTripSummary();
   renderTasks();
 });
@@ -609,4 +687,3 @@ durationSelect.addEventListener("change", () => {
 loadTripConfig();
 syncTripConfigUI();
 loadTasks();
-renderTasks();

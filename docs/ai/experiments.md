@@ -77,3 +77,20 @@ El proyecto se amplió con nuevas funcionalidades.
 La IA puede acelerar el desarrollo y sugerir ideas útiles.
 
 Sin embargo, es importante revisar siempre el código generado para evitar errores.
+
+--------------------------------------------------------------------------------------
+
+# Experimentos con IA
+
+Probé resolver problemas con y sin IA.
+
+Sin IA:
+- Más lento
+- Más difícil
+
+Con IA:
+- Más rápido
+- Mejor estructura
+
+Conclusión:
+La IA ayuda pero hay que revisar el código.

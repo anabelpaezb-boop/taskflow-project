@@ -65,3 +65,21 @@ La inteligencia artificial puede ser una herramienta muy potente para el desarro
 Permite acelerar el trabajo, aprender conceptos nuevos y mejorar proyectos.
 
 Sin embargo, el desarrollador sigue siendo responsable de entender y revisar el código generado.
+
+------------------------------------------------------------------------------------------------
+
+# Reflexión
+
+La IA me ha ayudado mucho a desarrollar el proyecto.
+
+He podido:
+- Generar código
+- Corregir errores
+- Mejorar diseño
+
+Sin embargo:
+- A veces genera errores
+- No siempre entiende el contexto
+
+Conclusión:
+La IA es una herramienta muy útil, pero no sustituye al programador.

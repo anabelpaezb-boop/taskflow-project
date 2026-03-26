@@ -126,3 +126,22 @@ Permiten:
 - Proponer mejoras en un proyecto.
 
 Sin embargo, es importante revisar siempre el código generado para asegurarse de que funciona correctamente y se adapta al proyecto.
+
+------------------------------------------------------------------------------------------------
+# Comparativa ChatGPT vs Claude
+
+Le pedí a ambos asistentes explicaciones sobre conceptos como el DOM, closures y event loop.
+
+ChatGPT:
+- Explicaciones claras y con ejemplos prácticos
+- Mejor para principiantes
+
+Claude:
+- Más detallado
+- Más técnico en algunos casos
+
+También probé a introducir errores en funciones JavaScript.
+Ambos detectaron errores, pero ChatGPT fue más directo.
+
+Conclusión:
+ChatGPT es más útil para desarrollo práctico.
