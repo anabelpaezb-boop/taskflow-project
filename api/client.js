@@ -1,4 +1,7 @@
-const API_BASE_URL = "http://localhost:3000/api/v1/tasks";
+const API_BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000/api/v1/tasks"
+    : "https://taskflow-project-oqcs-lbrr5dq9x-anabels-projects-994fe2bd.vercel.app/api/v1/tasks";
 
 /**
  * Convierte la respuesta HTTP en JSON o lanza un error útil

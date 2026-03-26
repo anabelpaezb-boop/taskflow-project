@@ -61,6 +61,10 @@ app.use((err, req, res, next) => {
    ARRANQUE DEL SERVIDOR
    ========================================= */
 
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
